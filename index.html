@@ -118,12 +118,12 @@
   .group-sum { margin-left:auto; font-size:12px; color:var(--muted);
                font-variant-numeric:tabular-nums; }
   .group-body { border-top:1px solid var(--border); }
-  .group-desc { font-size:12.5px; color:var(--muted); padding:9px 14px 0; max-width:78ch; }
+  .group-desc { font-size:12.5px; color:var(--muted); padding:9px 14px 0;
+                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
   /* Un intertitre par role : repliques, messages, interface */
   .role { display:flex; align-items:center; gap:10px; padding:9px 14px 2px; }
-  .role span { font-size:10.5px; font-weight:700; letter-spacing:.09em;
-               text-transform:uppercase; color:var(--muted); }
+  .role span { font-size:11px; font-weight:640; letter-spacing:.02em; color:var(--accent); }
   .role i { flex:1; height:1px; background:var(--border); }
 
   .card { background:var(--surface); border:1px solid var(--border); border-radius:10px;
@@ -360,7 +360,7 @@
 <script>
 "use strict";
 
-const MOD_VERSION = "7.0.0";
+const MOD_VERSION = "7.0.1";
 const REF_ACTIONS = [
   {
     "category": "environment",
@@ -3422,8 +3422,11 @@ function build(playerData) {
 
 const ROLE_ORDER = { SAY:0, MSG:1, NAME:2, EFFECT:3, SYSTEM:4 };
 const ROLE_TITLES = {
-  SAY:"Répliques tirées au hasard", MSG:"Messages", NAME:"Nom affiché",
-  EFFECT:"Effet du HUD", SYSTEM:"Technique",
+  SAY:    "Répliques — le joueur en dit une au hasard",
+  MSG:    "Messages — le joueur les dit à un moment précis",
+  NAME:   "Nom de l'action dans le panneau de configuration",
+  EFFECT: "Libellé du bandeau pendant que l'effet dure",
+  SYSTEM: "Textes techniques",
 };
 
 /// Une action = un groupe. Sans ca, 571 cles font 498 cartes empilees et on ne
@@ -3558,8 +3561,10 @@ function renderGroup(group, families, forceOpen) {
   body.className = "group-body";
 
   if (group.description) {
-    body.appendChild(Object.assign(document.createElement("p"),
-      { className:"group-desc", textContent: group.description }));
+    const desc = Object.assign(document.createElement("p"),
+      { className:"group-desc", textContent: group.description });
+    desc.title = group.description;
+    body.appendChild(desc);
   }
 
   let lastRole = null;
