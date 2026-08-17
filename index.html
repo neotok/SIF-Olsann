@@ -5,37 +5,37 @@
 
 <style>
   :root {
-    --bg: #f6f2eb; --surface: #fff; --surface-2: #fbf8f3;
-    --border: #e3dbcd; --border-strong: #cfc4b1;
-    --text: #221e19; --muted: #7a7167;
-    --accent: #a85f1e; --accent-soft: #f2e4d3; --on-accent: #fffaf4;
-    --ok: #4a7a3c; --ok-soft: #e6efe2;
-    --new: #2f6f8f; --new-soft: #dceaf2;
-    --warn: #a8501e; --warn-soft: #f8e6da;
+    --bg: #f4f5f7; --surface: #fff; --surface-2: #f8f9fb;
+    --border: #e2e5ea; --border-strong: #c9ced7;
+    --text: #15181d; --muted: #6b7280;
+    --accent: #6d28d9; --accent-soft: #ede9fe; --on-accent: #fff;
+    --ok: #15803d; --ok-soft: #e7f5ec;
+    --new: #0e7490; --new-soft: #dff1f5;
+    --warn: #b45309; --warn-soft: #fdf0dc;
     --shadow: 0 1px 2px rgba(34,30,25,.05), 0 4px 16px rgba(34,30,25,.04);
     --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #14120f; --surface: #1d1a16; --surface-2: #232019;
-      --border: #2f2a22; --border-strong: #453e33;
-      --text: #eae3d9; --muted: #968c7d;
-      --accent: #d89a4e; --accent-soft: #33291b; --on-accent: #1a1510;
-      --ok: #8fbd77; --ok-soft: #232c1f;
-      --new: #7fb6d4; --new-soft: #1c2a33;
-      --warn: #e0954f; --warn-soft: #33251a;
+      --bg: #15181d; --surface: #1c2027; --surface-2: #222730;
+      --border: #2c323c; --border-strong: #424a57;
+      --text: #e7eaef; --muted: #8b93a1;
+      --accent: #a78bfa; --accent-soft: #2a2440; --on-accent: #15181d;
+      --ok: #6ee7a8; --ok-soft: #1a2a22;
+      --new: #67e8f9; --new-soft: #142a30;
+      --warn: #fbbf24; --warn-soft: #2e2416;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.22);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #14120f; --surface: #1d1a16; --surface-2: #232019;
-    --border: #2f2a22; --border-strong: #453e33;
-    --text: #eae3d9; --muted: #968c7d;
-    --accent: #d89a4e; --accent-soft: #33291b; --on-accent: #1a1510;
-    --ok: #8fbd77; --ok-soft: #232c1f;
-    --new: #7fb6d4; --new-soft: #1c2a33;
-    --warn: #e0954f; --warn-soft: #33251a;
+    --bg: #15181d; --surface: #1c2027; --surface-2: #222730;
+    --border: #2c323c; --border-strong: #424a57;
+    --text: #e7eaef; --muted: #8b93a1;
+    --accent: #a78bfa; --accent-soft: #2a2440; --on-accent: #15181d;
+    --ok: #6ee7a8; --ok-soft: #1a2a22;
+    --new: #67e8f9; --new-soft: #142a30;
+    --warn: #fbbf24; --warn-soft: #2e2416;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.22);
   }
 
@@ -101,6 +101,30 @@
            font-variant-numeric:tabular-nums; margin-left:auto; }
   .stats b { color:var(--text); font-weight:620; }
   .stats .is-new b { color:var(--new); }
+
+  /* Un groupe = une action. Replie, il tient sur une ligne : c'est ce qui rend
+     570 cles parcourables. */
+  .group { background:var(--surface); border:1px solid var(--border); border-radius:10px;
+           margin-bottom:8px; overflow:hidden; box-shadow:var(--shadow); }
+  .group.open { box-shadow:0 0 0 1px var(--accent), var(--shadow); }
+  .group-head { display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+                padding:11px 14px; background:none; border:none; border-radius:0; cursor:pointer; }
+  .group-head:hover { background:var(--surface-2); border-color:transparent; }
+  .group-head:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+  .caret { color:var(--muted); font-size:11px; width:10px; flex:0 0 auto;
+           transition:transform .15s; }
+  .group.open .caret { transform:rotate(90deg); }
+  .group-name { font-family:var(--mono); font-size:14px; font-weight:620; letter-spacing:-.01em; }
+  .group-sum { margin-left:auto; font-size:12px; color:var(--muted);
+               font-variant-numeric:tabular-nums; }
+  .group-body { border-top:1px solid var(--border); }
+  .group-desc { font-size:13px; color:var(--muted); padding:11px 16px 4px; max-width:74ch; }
+
+  /* Un intertitre par role : repliques, messages, interface */
+  .role { display:flex; align-items:center; gap:10px; padding:14px 16px 4px; }
+  .role span { font-size:10.5px; font-weight:700; letter-spacing:.09em;
+               text-transform:uppercase; color:var(--muted); }
+  .role i { flex:1; height:1px; background:var(--border); }
 
   .card { background:var(--surface); border:1px solid var(--border); border-radius:10px;
           margin-bottom:14px; overflow:hidden; box-shadow:var(--shadow); }
@@ -3232,7 +3256,7 @@ function readJsonFile(file, onDone, onError) {
 
 /* ================= ONGLET TRADUCTIONS ================= */
 
-const state = { fileName: "UI.json", families: [], leftovers: {}, obsolete: [] };
+const state = { fileName:"UI.json", families:[], groups:[], leftovers:{}, obsolete:[], open:new Set() };
 
 function splitIndex(key) {
   const m = key.match(/^(.*?)(\d{1,3})$/);
@@ -3267,7 +3291,7 @@ function defaultNote(base) {
   const { scope, role } = parseKey(base);
   const parts = base.replace(/^UI_KAO_/, "").split("_");
 
-  if (scope === "SYSTEM") {
+  if (scope.startsWith("SYSTEM")) {
     const domain = DOMAIN_NOTES[parts[1]];
     return "Texte d'interface" + (domain ? " — " + domain : "") +
            ". À ne pas modifier sans raison.";
@@ -3286,7 +3310,11 @@ function defaultNote(base) {
 function parseKey(base) {
   const parts = base.replace(/^UI_KAO_/, "").split("_");
   if (parts[0] === "SYSTEM") {
-    return { scope:"SYSTEM", role:"SYSTEM", label: parts.slice(1).join(" ").toLowerCase() };
+    return {
+      scope: "SYSTEM_" + (parts[1] || ""),
+      role: "SYSTEM",
+      label: parts.slice(1).join(" ").toLowerCase(),
+    };
   }
   const grouped = (parts[0] === "zombie" || parts[0] === "costume") ? 2 : 1;
   const scope = parts.slice(0, grouped).join("_");
@@ -3363,7 +3391,7 @@ function build(playerData) {
       numbered: raw.rows.length > 1 || raw.rows[0].index !== null,
       category: (() => { const r = parseKey(raw.base).role; return r ? ROLES[r] : null; })(),
       label: parseKey(raw.base).label,
-      readOnly: parseKey(raw.base).scope === "SYSTEM",
+      readOnly: parseKey(raw.base).scope.startsWith("SYSTEM"),
       note: notes[raw.base] !== undefined ? notes[raw.base] : defaultNote(raw.base),
       autoNote: defaultNote(raw.base),
       variants: raw.rows.map((r, i) => ({
@@ -3375,8 +3403,67 @@ function build(playerData) {
       })),
     };
     recomputeGap(fam);
+    fam.scope = parseKey(fam.base).scope;
+    fam.role = parseKey(fam.base).role;
     state.families.push(fam);
   }
+
+  buildGroups();
+}
+
+const ROLE_ORDER = { SAY:0, MSG:1, NAME:2, EFFECT:3, SYSTEM:4 };
+const ROLE_TITLES = {
+  SAY:"Répliques tirées au hasard", MSG:"Messages", NAME:"Nom affiché",
+  EFFECT:"Effet du HUD", SYSTEM:"Technique",
+};
+
+/// Une action = un groupe. Sans ca, 571 cles font 498 cartes empilees et on ne
+/// trouve plus rien : le streamer cherche "ce que dit l'alarme", pas une cle.
+function buildGroups() {
+  const byScope = new Map();
+  for (const fam of state.families) {
+    if (!byScope.has(fam.scope)) {
+      const action = ACTION_BY_NAME[fam.scope];
+      byScope.set(fam.scope, {
+        scope: fam.scope,
+        category: action ? action.category : (fam.readOnly ? "système" : null),
+        description: action ? action.description : "",
+        readOnly: fam.readOnly,
+        families: [],
+      });
+    }
+    byScope.get(fam.scope).families.push(fam);
+  }
+
+  for (const group of byScope.values()) {
+    group.families.sort((a, b) =>
+      (ROLE_ORDER[a.role] ?? 9) - (ROLE_ORDER[b.role] ?? 9) || a.base.localeCompare(b.base));
+  }
+
+  state.groups = [...byScope.values()];
+}
+
+/// Titre lisible : "interface · options" plutot que "SYSTEM_OPTIONS"
+function groupTitle(scope) {
+  if (scope.startsWith("SYSTEM_")) {
+    const domain = scope.slice(7);
+    return "interface · " + (DOMAIN_NOTES[domain] || domain.toLowerCase());
+  }
+  if (scope.startsWith("zombie_")) return "zombie · " + scope.slice(7);
+  if (scope.startsWith("costume_")) return "costume · " + scope.slice(8);
+  return scope;
+}
+
+/// Ce que le groupe contient, en une ligne : evite d'avoir a l'ouvrir pour voir.
+function groupSummary(group) {
+  let lines = 0, news = 0;
+  for (const fam of group.families) {
+    lines += fam.variants.length;
+    news += fam.variants.filter(v => v.isNew).length;
+  }
+  const bits = [lines + (lines > 1 ? " lignes" : " ligne")];
+  if (news) bits.push(news + " nouvelle" + (news > 1 ? "s" : ""));
+  return bits.join(" · ");
 }
 
 function addVariant(fam, at) {
@@ -3403,16 +3490,23 @@ function render() {
   const filter = $("filter").value;
   let shown = 0;
 
-  for (const fam of state.families) {
-    if (filter === "dirty" && !fam.variants.some((_, i) => isDirty(fam, i))) continue;
-    if (filter === "new" && !familyHasNew(fam)) continue;
-    if (filter === "editable" && fam.readOnly) continue;
-    if (filter === "issue" && !familyIssue(fam)) continue;
-    if (term) {
-      const hay = (fam.base + " " + fam.note + " " + fam.variants.map(v => v.value).join(" ")).toLowerCase();
-      if (!hay.includes(term)) continue;
-    }
-    list.appendChild(renderFamily(fam));
+  for (const group of state.groups) {
+    const matching = group.families.filter(fam => {
+      if (filter === "dirty" && !fam.variants.some((_, i) => isDirty(fam, i))) return false;
+      if (filter === "new" && !familyHasNew(fam)) return false;
+      if (filter === "editable" && fam.readOnly) return false;
+      if (filter === "issue" && !familyIssue(fam)) return false;
+      if (term) {
+        const hay = (fam.base + " " + fam.note + " " +
+                     fam.variants.map(v => v.value).join(" ")).toLowerCase();
+        if (!hay.includes(term)) return false;
+      }
+      return true;
+    });
+
+    if (matching.length === 0) continue;
+    // Une recherche ouvre ce qu'elle trouve : sinon on cherche a l'aveugle
+    list.appendChild(renderGroup(group, matching, term !== ""));
     shown++;
   }
 
@@ -3420,31 +3514,75 @@ function render() {
   updateStats();
 }
 
-function renderFamily(fam) {
+function renderGroup(group, families, forceOpen) {
   const card = document.createElement("section");
-  card.className = "card";
+  const open = forceOpen || state.open.has(group.scope);
+  card.className = open ? "group open" : "group";
 
-  const head = document.createElement("div");
-  head.className = "card-head";
+  const head = document.createElement("button");
+  head.className = "group-head";
+  head.setAttribute("aria-expanded", String(open));
+
   head.appendChild(Object.assign(document.createElement("span"),
-    { className:"card-name", textContent: fam.label }));
-  if (fam.category) head.appendChild(Object.assign(document.createElement("span"),
-    { className:"chip", textContent: fam.category }));
-  if (fam.readOnly) head.appendChild(Object.assign(document.createElement("span"),
+    { className:"caret", textContent:"▶" }));
+  head.appendChild(Object.assign(document.createElement("span"),
+    { className:"group-name", textContent: groupTitle(group.scope) }));
+  if (group.category) head.appendChild(Object.assign(document.createElement("span"),
+    { className:"chip", textContent: group.category }));
+  if (group.readOnly) head.appendChild(Object.assign(document.createElement("span"),
     { className:"chip locked", textContent:"lecture seule" }));
-  if (familyHasNew(fam)) head.appendChild(Object.assign(document.createElement("span"),
+  if (families.some(familyHasNew)) head.appendChild(Object.assign(document.createElement("span"),
     { className:"chip new", textContent:"nouveau" }));
-  if (fam.variants.length > 1) head.appendChild(Object.assign(document.createElement("span"),
-    { className:"count", textContent: fam.variants.length + " variantes tirées au hasard" }));
+  head.appendChild(Object.assign(document.createElement("span"),
+    { className:"group-sum", textContent: groupSummary(group) }));
+
+  head.addEventListener("click", () => {
+    if (state.open.has(group.scope)) state.open.delete(group.scope);
+    else state.open.add(group.scope);
+    render();
+  });
+  card.appendChild(head);
+
+  if (!open) return card;
+
+  const body = document.createElement("div");
+  body.className = "group-body";
+
+  if (group.description) {
+    body.appendChild(Object.assign(document.createElement("p"),
+      { className:"group-desc", textContent: group.description }));
+  }
+
+  let lastRole = null;
+  for (const fam of families) {
+    if (fam.role !== lastRole) {
+      lastRole = fam.role;
+      const role = document.createElement("div");
+      role.className = "role";
+      role.appendChild(Object.assign(document.createElement("span"),
+        { textContent: ROLE_TITLES[fam.role] || "Autres" }));
+      role.appendChild(document.createElement("i"));
+      body.appendChild(role);
+    }
+    body.appendChild(renderFamily(fam));
+  }
+
+  card.appendChild(body);
+  requestAnimationFrame(() => card.querySelectorAll("textarea").forEach(autoGrow));
+  return card;
+}
+
+function renderFamily(fam) {
+  const block = document.createElement("div");
 
   if (fam.gap !== null) {
     const fix = document.createElement("button");
     fix.className = "flag";
+    fix.style.margin = "0 16px 6px";
     fix.textContent = "trou en " + pad(fam.gap) + " — la suite ne sort jamais · réparer";
     fix.addEventListener("click", () => { renumber(fam); render(); });
-    head.appendChild(fix);
+    block.appendChild(fix);
   }
-  card.appendChild(head);
 
   const noteRow = document.createElement("div");
   noteRow.className = "note-row";
@@ -3454,17 +3592,15 @@ function renderFamily(fam) {
   noteArea.className = "note-field";
   noteArea.rows = 1;
   noteArea.id = "note-" + fam.base;
-  noteArea.placeholder = "À quoi sert cette phrase, quand elle se déclenche…";
   noteArea.title = "Description fournie par le mod. La réécrire l'enregistre dans ton fichier.";
   noteArea.value = fam.note;
   noteArea.addEventListener("input", () => { fam.note = noteArea.value; autoGrow(noteArea); });
   label.htmlFor = noteArea.id;
   noteRow.append(label, noteArea);
-  card.appendChild(noteRow);
+  block.appendChild(noteRow);
 
-  fam.variants.forEach((_, i) => card.appendChild(renderEntry(fam, i)));
-  requestAnimationFrame(() => card.querySelectorAll("textarea").forEach(autoGrow));
-  return card;
+  fam.variants.forEach((_, i) => block.appendChild(renderEntry(fam, i)));
+  return block;
 }
 
 function renderEntry(fam, i) {
@@ -3474,14 +3610,18 @@ function renderEntry(fam, i) {
 
   const keyCell = document.createElement("div");
   keyCell.className = "entry-key";
+  // Le nom de l'action est deja dans l'entete du groupe : on n'affiche que ce
+  // qui distingue cette ligne des autres
+  const short = fam.base.replace("UI_KAO_" + fam.scope + "_", "").replace(/_$/, "");
   if (fam.numbered) {
     const num = document.createElement("b");
     num.textContent = pad(i + 1);
     if (variant.originalKey === null || variant.isNew) num.className = "added";
-    keyCell.append(fam.base, num);
+    keyCell.append(short ? short + " " : "", num);
   } else {
-    keyCell.textContent = fam.base;
+    keyCell.textContent = short || fam.base;
   }
+  keyCell.title = keyAt(fam, i);
   row.appendChild(keyCell);
 
   const main = document.createElement("div");
