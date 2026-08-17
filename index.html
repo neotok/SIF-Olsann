@@ -155,17 +155,18 @@
   }
 
   /* parametres (configuration + Streamer.bot) */
-  .param { display:grid; grid-template-columns:190px 200px 1fr; gap:12px;
+  .param { display:grid; grid-template-columns:24px 170px 210px 1fr; gap:12px;
            padding:8px 16px; align-items:center; border-top:1px solid var(--border); }
-  .param-name { font-family:var(--mono); font-size:12.5px;
-                display:flex; align-items:center; gap:7px; }
-  .param-name input[type="checkbox"] { margin:0; flex:0 0 auto; }
+  .param-check { display:flex; justify-content:center; }
+  .param-check input { margin:0; }
+  .param-name { font-family:var(--mono); font-size:12.5px; word-break:break-word; }
   .param-name .req { color:var(--warn); }
   .param-desc { font-size:12.5px; color:var(--muted); }
   .param input, .param select { width:100%; }
   .param.changed .param-name { color:var(--ok); font-weight:620; }
   @media (max-width:760px) {
-    .param { grid-template-columns:1fr; gap:4px; }
+    .param { grid-template-columns:24px 1fr; gap:4px 10px; }
+    .param-name, .param-desc { grid-column:2; }
     .param-desc { padding-bottom:4px; }
   }
 
@@ -268,6 +269,7 @@
     <div class="card">
       <div class="card-head"><span class="card-name">tag</span><span class="chip">identité</span></div>
       <div class="param">
+        <div class="param-check"></div>
         <div class="param-name">tag</div>
         <div><input type="text" id="cfg-tag" placeholder="olsann" autocomplete="off"></div>
         <div class="param-desc">
@@ -3702,6 +3704,10 @@ function renderConfigParam(action, param) {
   const row = document.createElement("div");
   row.className = "param";
 
+  // Colonne vide : aligne la configuration sur l'onglet Streamer.bot, qui a
+  // une case a cocher au meme endroit
+  row.appendChild(Object.assign(document.createElement("div"), { className:"param-check" }));
+
   const name = document.createElement("div");
   name.className = "param-name";
   name.textContent = param.name;
@@ -3820,14 +3826,20 @@ function renderBot() {
     const row = document.createElement("div");
     row.className = "param";
 
-    const name = document.createElement("label");
-    name.className = "param-name";
+    const checkCell = document.createElement("div");
+    checkCell.className = "param-check";
     const check = document.createElement("input");
     check.type = "checkbox";
+    check.id = "bot-" + action.name + "-" + param.name;
     check.checked = param.name in bot.chosen || param.required;
     check.disabled = param.required;
-    name.appendChild(check);
-    name.appendChild(document.createTextNode(param.name));
+    checkCell.appendChild(check);
+    row.appendChild(checkCell);
+
+    const name = document.createElement("label");
+    name.className = "param-name";
+    name.htmlFor = check.id;
+    name.textContent = param.name;
     if (param.required) {
       const req = document.createElement("span");
       req.className = "req";
