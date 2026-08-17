@@ -936,22 +936,13 @@
   },
   {
     "category": "player",
-    "description": "Vie supplementaire : si la sante passe sous le seuil, le joueur est soigne et tous les zombies proches meurent dans un flash lumineux",
+    "description": "Vie en reserve, sans limite de temps : a la premiere fois ou le joueur va mourir, il est soigne, releve et tous les zombies proches meurent dans un flash lumineux",
     "examples": [
       "{ type = \"phoenix\", viewer = \"%user%\" }",
       "{ type = \"phoenix\", threshold = 30, radius = 15, viewer = \"%user%\" }"
     ],
     "name": "phoenix",
     "params": [
-      {
-        "default": "60",
-        "description": "Duree de la protection en temps reel (secondes)",
-        "max": "10800",
-        "min": "60",
-        "name": "duration",
-        "required": false,
-        "type": "number|string"
-      },
       {
         "default": "20",
         "description": "Seuil de sante (%) qui declenche la renaissance",
@@ -1421,7 +1412,7 @@
         ]
       },
       {
-        "default": "24",
+        "default": "6",
         "description": "Duree en temps de jeu (heures)",
         "max": "168",
         "min": "1",

@@ -1,7 +1,7 @@
 # Personnaliser SIF-Olsann
 
 Ces fichiers sont la **reference** : ils contiennent les valeurs que le mod
-utilise aujourd'hui, en version 7.1.0. Copiez ce dont vous avez besoin dans :
+utilise aujourd'hui, en version 7.6.2. Copiez ce dont vous avez besoin dans :
 
     Zomboid/Lua/SIF-Olsann/
 

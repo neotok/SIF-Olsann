@@ -359,7 +359,7 @@
 <script>
 "use strict";
 
-const MOD_VERSION = "7.1.0";
+const MOD_VERSION = "7.6.2";
 const REF_ACTIONS = [
   {
     "category": "environment",
@@ -1298,22 +1298,13 @@ const REF_ACTIONS = [
   },
   {
     "category": "player",
-    "description": "Vie supplementaire : si la sante passe sous le seuil, le joueur est soigne et tous les zombies proches meurent dans un flash lumineux",
+    "description": "Vie en reserve, sans limite de temps : a la premiere fois ou le joueur va mourir, il est soigne, releve et tous les zombies proches meurent dans un flash lumineux",
     "examples": [
       "{ type = \"phoenix\", viewer = \"%user%\" }",
       "{ type = \"phoenix\", threshold = 30, radius = 15, viewer = \"%user%\" }"
     ],
     "name": "phoenix",
     "params": [
-      {
-        "default": "60",
-        "description": "Duree de la protection en temps reel (secondes)",
-        "max": "10800",
-        "min": "60",
-        "name": "duration",
-        "required": false,
-        "type": "number|string"
-      },
       {
         "default": "20",
         "description": "Seuil de sante (%) qui declenche la renaissance",
@@ -1783,7 +1774,7 @@ const REF_ACTIONS = [
         ]
       },
       {
-        "default": "24",
+        "default": "6",
         "description": "Duree en temps de jeu (heures)",
         "max": "168",
         "min": "1",
@@ -2660,6 +2651,8 @@ const REF_TEXTS = {
   "UI_KAO_SYSTEM_CONFIG_COL_ROULETTE": "Roulette",
   "UI_KAO_SYSTEM_CONFIG_HINT": "Ne filtre que les tirages aleatoires : une action demandee par un viewer part toujours.",
   "UI_KAO_SYSTEM_CONFIG_SAVE": "Enregistrer",
+  "UI_KAO_SYSTEM_CONFIG_SAVED": "Réglages enregistrés.",
+  "UI_KAO_SYSTEM_CONFIG_SAVE_FAILED": "Enregistrement impossible, voir console.txt.",
   "UI_KAO_SYSTEM_CONFIG_SEARCH": "Rechercher une action",
   "UI_KAO_SYSTEM_CONFIG_TITLE": "Configuration SIF-Olsann",
   "UI_KAO_SYSTEM_CREDITS_ACTIONS_SUFFIX": " actions",
@@ -2685,10 +2678,11 @@ const REF_TEXTS = {
   "UI_KAO_SYSTEM_DEFER_NO_ITEMS_IN_HAND": "Pas d'objets en main",
   "UI_KAO_SYSTEM_DEFER_NO_VEHICLE": "Pas de véhicule",
   "UI_KAO_SYSTEM_DEFER_PART_UNAVAILABLE": "Pièce indisponible sur le véhicule",
-  "UI_KAO_SYSTEM_DEFER_THANKS": "Merci %s, ça va venir mais pas tout de suite.",
+  "UI_KAO_SYSTEM_DEFER_THANKS": "Merci {1}, ça va venir mais pas tout de suite.",
   "UI_KAO_SYSTEM_DEFER_VEHICLE_STOPPED": "Vehicule a l'arret",
-  "UI_KAO_SYSTEM_EFFECT_ENDS_AT": "fin %%s",
+  "UI_KAO_SYSTEM_EFFECT_ENDS_AT": "fin {1}",
   "UI_KAO_SYSTEM_EFFECT_PENDING": "en attente",
+  "UI_KAO_SYSTEM_EFFECT_UNTIL_USED": "en réserve",
   "UI_KAO_SYSTEM_ERR_HOUSE_EVENT_RUNNING": "Un événement est déjà en cours...",
   "UI_KAO_SYSTEM_HUD_CLOSE": "x",
   "UI_KAO_SYSTEM_HUD_CURRENT_DEATHS": "Morts : ",
@@ -2746,7 +2740,7 @@ const REF_TEXTS = {
   "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_SHOWERS": "Averses",
   "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_STORM": "Orage",
   "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_TROPICAL": "Tempête tropicale",
-  "UI_KAO_SYSTEM_ITEM_KEY_TO_VEHICLE": "Clé pour %s",
+  "UI_KAO_SYSTEM_ITEM_KEY_TO_VEHICLE": "Clé pour {1}",
   "UI_KAO_SYSTEM_MENU_CONFIG": "Configurer SIF-Olsann",
   "UI_KAO_SYSTEM_MENU_ENABLE_SLEEP": "Activer capacite de dormir",
   "UI_KAO_SYSTEM_MENU_HIDE_HUD": "Masquer HUD KAO",
@@ -2815,6 +2809,7 @@ const REF_TEXTS = {
   "UI_KAO_alarm_NAME": "Alarme",
   "UI_KAO_alarm_SAY_01": "Alarme !",
   "UI_KAO_alarm_SAY_02": "Alarme declenchee !",
+  "UI_KAO_ambianceSound_NAME": "Son d’ambiance",
   "UI_KAO_amnesia_NAME": "Amnésie",
   "UI_KAO_amnesia_SAY_01": "Attends... je faisais quoi déjà ?",
   "UI_KAO_amnesia_SAY_02": "C'est quoi ce truc dans ma main ?",
@@ -2840,6 +2835,7 @@ const REF_TEXTS = {
   "UI_KAO_carMageddon_SAY_02": "Ça carambole plus que le périph un vendredi soir !",
   "UI_KAO_carMageddon_SAY_03": "Il pleut des bagnoles, sortez couverts !",
   "UI_KAO_carMageddon_SAY_04": "C'est l'apocalypse automobile !",
+  "UI_KAO_coffee_NAME": "Café",
   "UI_KAO_coffee_SAY_01": "Un petit café et ça repart !",
   "UI_KAO_companion_NAME": "Garde du corps",
   "UI_KAO_companion_SAY_01": "Tu as tué mes hommes, alors tu vas bosser pour moi. Tiens, prend ce flingue.",
@@ -2867,9 +2863,9 @@ const REF_TEXTS = {
   "UI_KAO_discoInferno_lines_SAY_05": "C'est la danse des canards, Qui en sortant de la mare, Se secouent le bas des reins, Et font coin-coin ",
   "UI_KAO_discoInferno_lines_SAY_06": "Ça plane pour moi moi moi moi !",
   "UI_KAO_discoInferno_lines_SAY_07": "Haha ha ha ha Stayin' aliiiive, stayin' aliiiive !",
-  "UI_KAO_donation_ERR_CONFIG": "Erreur de configuration : don recu sans montant valide. Parametres recus : %s",
+  "UI_KAO_donation_ERR_CONFIG": "Erreur de configuration : don recu sans montant valide. Parametres recus : {1}",
   "UI_KAO_donation_NAME": "Donation",
-  "UI_KAO_donation_SAY_01": "Les dons invoquent %d zombies !",
+  "UI_KAO_donation_SAY_01": "Les dons invoquent {1} zombies !",
   "UI_KAO_drunk_NAME": "Ivresse",
   "UI_KAO_drunk_SAY_01": "L'alcool est notre pire ennemi, fuir serait lâche !",
   "UI_KAO_drunk_SAY_02": "L'alcool permet de rendre l'eau potable.",
@@ -2906,7 +2902,7 @@ const REF_TEXTS = {
   "UI_KAO_itemCondition_full_SAY_01": "Armes réparées",
   "UI_KAO_itemCondition_zero_SAY_01": "Oups, c'est cassé...",
   "UI_KAO_itemSpawn_MSG_DEFAULT": "It's dangerous to go alone! Take this",
-  "UI_KAO_itemSpawn_MSG_WITH_ITEM": "%s (%s)",
+  "UI_KAO_itemSpawn_MSG_WITH_ITEM": "{1} ({2})",
   "UI_KAO_itemSpawn_NAME": "Spawn d'objet",
   "UI_KAO_item_spawn_SAY_01": "It's dangerous to go alone! Take this",
   "UI_KAO_jumpscare_NAME": "Jumpscare",
@@ -2936,7 +2932,7 @@ const REF_TEXTS = {
   "UI_KAO_nightmare_SAY_01": "Je ne dors plus... je cauchemarde.",
   "UI_KAO_nightmare_SAY_02": "Les tenebres m'entourent...",
   "UI_KAO_nightmare_SAY_03": "C'est quoi ce cauchemar ?!",
-  "UI_KAO_openDoor_ERR_NO_CLOSED_DOORS": "Aucune porte fermée trouvée dans un rayon de %s !",
+  "UI_KAO_openDoor_ERR_NO_CLOSED_DOORS": "Aucune porte fermée trouvée dans un rayon de {1} !",
   "UI_KAO_openDoor_NAME": "Ouvrir les portes",
   "UI_KAO_openDoor_SAY_01": "Ouvrir une porte, c'est parfois inviter le danger à dîner.",
   "UI_KAO_openDoor_SAY_02": "Toute porte qui s'ouvre peut cacher un courant d'air... ou un courant d'ennuis.",
@@ -2945,6 +2941,7 @@ const REF_TEXTS = {
   "UI_KAO_panicAttack_SAY_01": "Mon coeur va exploser !",
   "UI_KAO_panicAttack_SAY_02": "Ils sont partout ! PARTOUT !",
   "UI_KAO_panicAttack_SAY_03": "Respire... respire... RESPIRE !",
+  "UI_KAO_paranoia_NAME": "Paranoia",
   "UI_KAO_paranoia_SAY_01": "C'était quoi ce bruit ?!",
   "UI_KAO_paranoia_SAY_02": "Il y a quelqu'un ?...",
   "UI_KAO_phoenix_NAME": "Phénix",
@@ -2966,12 +2963,12 @@ const REF_TEXTS = {
   "UI_KAO_playerInvisibleToZombie_SAY_01": "Ils ne peuvent plus me voir!",
   "UI_KAO_playerInvisibleToZombie_SAY_02": "Je me fonds dans les ombres...",
   "UI_KAO_playerTchiTchi_NAME": "TchiTchi",
-  "UI_KAO_playerTrait_ERR_ALREADY_HAS": "J'ai déjà ce trait : %s",
+  "UI_KAO_playerTrait_ERR_ALREADY_HAS": "J'ai déjà ce trait : {1}",
   "UI_KAO_playerTrait_ERR_NONE_AVAILABLE": "Aucun trait disponible...",
-  "UI_KAO_playerTrait_ERR_NOT_OWNED": "Je n'ai pas ce trait : %s",
-  "UI_KAO_playerTrait_MSG_GAINED": "Gagné : %s",
-  "UI_KAO_playerTrait_MSG_LOST": "Perdu : %s",
-  "UI_KAO_playerTrait_MSG_RESULT_WITH_TRAIT": "%s [%s]",
+  "UI_KAO_playerTrait_ERR_NOT_OWNED": "Je n'ai pas ce trait : {1}",
+  "UI_KAO_playerTrait_MSG_GAINED": "Gagné : {1}",
+  "UI_KAO_playerTrait_MSG_LOST": "Perdu : {1}",
+  "UI_KAO_playerTrait_MSG_RESULT_WITH_TRAIT": "{1} [{2}]",
   "UI_KAO_playerTrait_NAME": "Trait de caractère",
   "UI_KAO_playerTrait_add_negative_SAY_01": "Certaines choses arrivent... et on continue d'avancer.",
   "UI_KAO_playerTrait_add_positive_SAY_01": "Ha enfin un truc utile !",
@@ -2981,7 +2978,7 @@ const REF_TEXTS = {
   "UI_KAO_playerWakeup_SAY_01": "Wake Uuuuuuuuuuuuuuuuuuuuup !!!",
   "UI_KAO_playerWakeup_SAY_02": "Debout la-dedans !",
   "UI_KAO_randomInjury_MSG_DEFAULT": "Aïe !",
-  "UI_KAO_randomInjury_MSG_WITH_PART": "%s (%s)",
+  "UI_KAO_randomInjury_MSG_WITH_PART": "{1} ({2})",
   "UI_KAO_randomInjury_NAME": "Blessure aléatoire",
   "UI_KAO_randomInjury_bleeding_SAY_01": "Une coupure nette, une artère ouverte !",
   "UI_KAO_randomInjury_bullet_SAY_01": "J'ai beau être matinal, j'ai mal...",
@@ -3045,10 +3042,11 @@ const REF_TEXTS = {
   "UI_KAO_superMario_NAME": "Super Mario",
   "UI_KAO_teleportBack_NAME": "Retour position sauvée",
   "UI_KAO_teleport_ERR_NO_POSITION": "Aucune position sauvegardée pour se téléporter.",
-  "UI_KAO_teleport_MSG_SAVED": "Position sauvegardée : x=%.0f, y=%.0f, z=%.0f",
-  "UI_KAO_teleport_MSG_TO_AREA": "Téléporté vers : %s",
+  "UI_KAO_teleport_MSG_SAVED": "Position sauvegardée : x={1}, y={2}, z={3}",
+  "UI_KAO_teleport_MSG_TO_AREA": "Téléporté vers : {1}",
+  "UI_KAO_teleport_NAME": "Téléportation",
   "UI_KAO_tt_NAME": "Décocher retire l'action des tirages aléatoires (Watch me die!, roulette). Une action demandée par un viewer s'exécute toujours.",
-  "UI_KAO_viewerRoulette_MSG_RESULT": "Roulette : %s !",
+  "UI_KAO_viewerRoulette_MSG_RESULT": "Roulette : {1} !",
   "UI_KAO_viewerRoulette_NAME": "Roulette des viewers",
   "UI_KAO_viewerRoulette_SAY_01": "La roue tourne...",
   "UI_KAO_viewerRoulette_SAY_02": "Faites vos jeux, rien ne va plus !",
@@ -3229,7 +3227,9 @@ function parseKey(base) {
   return { scope, role, label: detail ? scope + " · " + detail : scope };
 }
 
-const placeholders = t => (String(t).match(/%(?:\d+\$)?[.\d]*[a-zA-Z%]/g) || []).sort();
+// Marqueurs {1} {2} {3} : le mod les remplit lui-meme. Un texte traduit doit
+// porter les memes que l'original, sinon la valeur disparait de la phrase.
+const placeholders = t => (String(t).match(/\{[123]\}/g) || []).sort();
 const samePlaceholders = (a, b) => {
   const pa = placeholders(a), pb = placeholders(b);
   return pa.length === pb.length && pa.every((v, i) => v === pb[i]);
