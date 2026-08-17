@@ -359,7 +359,7 @@
 <script>
 "use strict";
 
-const MOD_VERSION = "7.6.2";
+const MOD_VERSION = "7.6.3";
 const REF_ACTIONS = [
   {
     "category": "environment",
@@ -3156,7 +3156,7 @@ function readJsonFile(file, onDone, onError) {
 
 /* ================= ONGLET TRADUCTIONS ================= */
 
-const state = { fileName:"UI.json", families:[], groups:[], leftovers:{}, obsolete:[], open:new Set() };
+const state = { fileName:"UI.json", families:[], groups:[], leftovers:{}, obsolete:[], staleMarkers:[], open:new Set() };
 
 function splitIndex(key) {
   const m = key.match(/^(.*?)(\d{1,3})$/);
@@ -3229,6 +3229,26 @@ function parseKey(base) {
 
 // Marqueurs {1} {2} {3} : le mod les remplit lui-meme. Un texte traduit doit
 // porter les memes que l'original, sinon la valeur disparait de la phrase.
+// Anciens marqueurs printf, remplaces par {1} {2} {3}.
+// Deux expressions : une globale pour remplacer, une SANS le drapeau g pour
+// tester. Un regex global garde un lastIndex entre les appels et .test()
+// repondrait vrai puis faux sur la meme chaine.
+const OLD_MARKER = /%(?:\.\d*)?[sdf]/g;
+const HAS_OLD_MARKER = /%(?:\.\d*)?[sdf]/;
+
+/// Convertit un texte encore ecrit en %s vers les accolades.
+///
+/// Si, marqueurs mis a part, le texte est celui du mod, le streamer ne l'avait
+/// pas touche : on rend la version a jour telle quelle. Sinon c'est SON texte,
+/// on le garde et on numerote ses marqueurs dans l'ordre d'apparition.
+function upgradeMarkers(value, refValue) {
+  const nu = s => String(s).replace(OLD_MARKER, "{}").replace(/\{[123]\}/g, "{}");
+  if (nu(value) === nu(refValue)) return refValue;
+
+  let n = 0;
+  return value.replace(OLD_MARKER, () => "{" + (++n > 3 ? 3 : n) + "}");
+}
+
 const placeholders = t => (String(t).match(/\{[123]\}/g) || []).sort();
 const samePlaceholders = (a, b) => {
   const pa = placeholders(a), pb = placeholders(b);
@@ -3266,15 +3286,24 @@ function build(playerData) {
   state.families = [];
   state.leftovers = {};
   state.obsolete = [];
+  state.staleMarkers = [];
 
   const player = {};
-  for (const [key, value] of Object.entries(playerData || {})) {
+  for (let [key, value] of Object.entries(playerData || {})) {
     // Les fichiers produits par les versions precedentes portent des notes :
     // on les ecarte sans les signaler comme cles obsoletes
     if (key.startsWith(NOTE_PREFIX)) continue;
     if (typeof value !== "string") { state.leftovers[key] = value; continue; }
+    if (!(key in REF_TEXTS)) { state.obsolete.push(key); player[key] = value; continue; }
+
+    // Fichier issu d'une version anterieure : les marqueurs y sont encore
+    // ecrits %s ou %d. Reinjectes tels quels, le mod ne sait plus les remplir
+    // et le joueur lirait "%s" en toutes lettres. On les convertit.
+    if (HAS_OLD_MARKER.test(value) && /\{[123]\}/.test(REF_TEXTS[key])) {
+      state.staleMarkers.push(key);
+      value = upgradeMarkers(value, REF_TEXTS[key]);
+    }
     player[key] = value;
-    if (!(key in REF_TEXTS)) state.obsolete.push(key);
   }
 
   const byBase = new Map();
@@ -3380,8 +3409,17 @@ function addVariant(fam, at) {
     { value:"", originalKey:null, originalValue:null, index:0, isNew:false });
   renumber(fam);
 }
+/// Retirer une replique du MOD ne la supprime pas du jeu : un pack surcharge
+/// cle par cle, et une cle absente retombe sur le texte du mod. La seule facon
+/// de faire taire une replique est de la declarer VIDE. On vide donc, et on ne
+/// retire vraiment que les variantes ajoutees ici, que le mod ne connait pas.
 function removeVariant(fam, at) {
-  if (fam.variants.length <= 1) { fam.variants[0].value = ""; return; }
+  const v = fam.variants[at];
+  if (!v) return;
+
+  if (v.originalKey !== null) { v.value = ""; return; }
+
+  if (fam.variants.length <= 1) { v.value = ""; return; }
   fam.variants.splice(at, 1);
   const only = fam.variants[0];
   if (fam.variants.length === 1 && only.originalKey !== null &&
@@ -3597,9 +3635,14 @@ function renderEntry(fam, i) {
   const minus = document.createElement("button");
   minus.className = "icon minus";
   minus.textContent = "−";
-  minus.title = solo ? "Vider cette phrase (la clef est conservée)" : "Supprimer cette variante";
+  // Le libelle doit dire ce qui se passe VRAIMENT : une replique du mod se tait,
+  // elle ne disparait pas. La retirer du fichier la ferait revenir en jeu.
+  const duMod = variant.originalKey !== null;
+  minus.title = duMod
+    ? "Faire taire cette phrase — la clef reste, vide, sinon le mod la remettrait"
+    : "Retirer cette variante ajoutée";
   minus.setAttribute("aria-label", minus.title);
-  minus.disabled = solo && variant.value === "";
+  minus.disabled = duMod && variant.value === "";
   minus.addEventListener("click", () => { removeVariant(fam, i); render(); });
   actions.appendChild(minus);
 
@@ -3671,15 +3714,35 @@ function download(text, name) {
 function showObsolete() {
   const box = $("obsolete");
   box.textContent = "";
-  if (state.obsolete.length === 0) { box.classList.add("hidden"); return; }
-  const title = document.createElement("h2");
-  title.textContent = "Clés disparues du mod";
-  const p = document.createElement("p");
-  p.textContent = state.obsolete.length + " clé(s) de ton fichier n'existent plus : " +
-    state.obsolete.slice(0, 6).join(", ") +
-    (state.obsolete.length > 6 ? "…" : "") +
-    ". Elles ne sont pas reprises dans le téléchargement.";
-  box.append(title, p);
+  if (state.obsolete.length === 0 && state.staleMarkers.length === 0) {
+    box.classList.add("hidden");
+    return;
+  }
+
+  // Le fichier vient d'une version anterieure du mod : ses marqueurs sont
+  // restes en %s. C'est le plus grave des deux, donc en tete.
+  if (state.staleMarkers.length > 0) {
+    const t = document.createElement("h2");
+    t.textContent = "Fichier d'une version précédente";
+    const p = document.createElement("p");
+    p.textContent = state.staleMarkers.length + " texte(s) utilisent encore les anciens " +
+      "marqueurs %s ou %d, remplacés depuis par {1}, {2}. Ils ont été remis à jour " +
+      "automatiquement : sans ça, le joueur aurait lu « %s » en toutes lettres. " +
+      "Les textes que tu avais réécrits sont conservés.";
+    box.append(t, p);
+  }
+
+  if (state.obsolete.length > 0) {
+    const title = document.createElement("h2");
+    title.textContent = "Clés disparues du mod";
+    const p = document.createElement("p");
+    p.textContent = state.obsolete.length + " clé(s) de ton fichier n'existent plus : " +
+      state.obsolete.slice(0, 6).join(", ") +
+      (state.obsolete.length > 6 ? "…" : "") +
+      ". Elles ne sont pas reprises dans le téléchargement.";
+    box.append(title, p);
+  }
+
   box.classList.remove("hidden");
 }
 
