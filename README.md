@@ -1,7 +1,7 @@
 # Personnaliser SIF-Olsann
 
 Ces fichiers sont la **reference** : ils contiennent les valeurs que le mod
-utilise aujourd'hui, en version 7.0.1. Copiez ce dont vous avez besoin dans :
+utilise aujourd'hui, en version 7.1.0. Copiez ce dont vous avez besoin dans :
 
     Zomboid/Lua/SIF-Olsann/
 
@@ -47,8 +47,11 @@ Trois choses a savoir :
 - Une valeur **vide** est acceptee : elle fait taire cette replique-la sans
   casser les suivantes. Vider toutes les variantes rend l'action silencieuse.
 - Le JSON **n'accepte aucun commentaire**. `//` ou `/* */` font echouer le
-  fichier entier. Pour annoter, ajoutez une cle `_note_<famille>`, que le mod
-  ignore.
+  fichier entier.
+
+Le role se lit dans le nom de la cle : `SAY` pour les repliques tirees au hasard,
+`MSG` pour un texte dit a un moment precis, `ERR` quand l'action n'a rien pu
+faire, `NAME` pour le libelle affiche dans le panneau et le bandeau d'effets.
 
 Les cles commencant par `UI_KAO_SYSTEM_` sont des textes techniques : mieux vaut
 ne pas y toucher.
