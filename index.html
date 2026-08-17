@@ -118,10 +118,10 @@
   .group-sum { margin-left:auto; font-size:12px; color:var(--muted);
                font-variant-numeric:tabular-nums; }
   .group-body { border-top:1px solid var(--border); }
-  .group-desc { font-size:13px; color:var(--muted); padding:11px 16px 4px; max-width:74ch; }
+  .group-desc { font-size:12.5px; color:var(--muted); padding:9px 14px 0; max-width:78ch; }
 
   /* Un intertitre par role : repliques, messages, interface */
-  .role { display:flex; align-items:center; gap:10px; padding:14px 16px 4px; }
+  .role { display:flex; align-items:center; gap:10px; padding:9px 14px 2px; }
   .role span { font-size:10.5px; font-weight:700; letter-spacing:.09em;
                text-transform:uppercase; color:var(--muted); }
   .role i { flex:1; height:1px; background:var(--border); }
@@ -142,9 +142,9 @@
           border:1px solid transparent; border-radius:4px; padding:3px 8px; cursor:pointer; }
   .flag:hover { border-color:var(--warn); }
 
-  textarea { font:inherit; font-size:14px; line-height:1.5; color:var(--text);
+  textarea { font:inherit; font-size:13.5px; line-height:1.45; color:var(--text);
              background:var(--surface); border:1px solid var(--border); border-radius:6px;
-             padding:6px 9px; width:100%; resize:vertical; min-height:34px; overflow:hidden; }
+             padding:5px 9px; width:100%; resize:vertical; min-height:30px; overflow:hidden; }
   textarea:focus-visible { outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent); }
   textarea.note-field { font-size:13px; color:var(--muted); font-style:italic; background:var(--surface-2); }
   textarea.dirty { border-color:var(--ok); background:var(--ok-soft); }
@@ -152,24 +152,24 @@
   textarea.mismatch { border-color:var(--warn); background:var(--warn-soft); }
   textarea[readonly] { background:var(--surface-2); color:var(--muted); cursor:default; }
 
-  .note-row { padding:10px 16px; border-bottom:1px solid var(--border);
-              display:flex; gap:10px; align-items:flex-start; }
+  .note-row { padding:4px 14px 2px; display:flex; gap:10px; align-items:flex-start; }
   .note-row label { font-size:11px; font-weight:660; letter-spacing:.04em; text-transform:uppercase;
                     color:var(--muted); padding-top:7px; flex:0 0 auto; }
 
-  .entry { display:grid; grid-template-columns:230px 1fr auto; gap:12px; padding:10px 16px;
-           align-items:start; border-top:1px solid var(--border); }
+  .entry { display:grid; grid-template-columns:170px 1fr auto; gap:10px; padding:5px 14px;
+           align-items:start; border-top:none; }
   .entry:first-of-type { border-top:none; }
-  .entry-key { font-family:var(--mono); font-size:12px; color:var(--muted);
-               padding-top:8px; word-break:break-all; }
+  .entry-key { font-family:var(--mono); font-size:11.5px; color:var(--muted);
+               padding-top:7px; word-break:break-all; }
   .entry-key b { color:var(--text); font-weight:620; }
   .entry-key .added { color:var(--new); font-weight:620; }
   .entry-main { min-width:0; }
-  .entry-meta { display:flex; gap:10px; align-items:center; margin-top:5px; min-height:18px; }
+  .entry-meta { display:flex; gap:8px; align-items:center; margin-top:2px; min-height:0; }
+  .entry-meta:empty { display:none; }
   .entry-meta small { font-size:11.5px; color:var(--muted); }
   .entry-meta .bad { color:var(--warn); font-weight:600; }
   .entry-actions { display:flex; gap:5px; padding-top:3px; }
-  .icon { width:30px; height:30px; padding:0; display:grid; place-items:center;
+  .icon { width:26px; height:26px; padding:0; display:grid; place-items:center;
           font-size:17px; line-height:1; color:var(--muted); border-radius:6px; }
   .icon:hover { color:var(--accent); border-color:var(--accent); background:var(--surface-2); }
   .icon.minus:hover { color:var(--warn); border-color:var(--warn); background:var(--warn-soft); }
@@ -234,6 +234,13 @@
         Sans fichier, tu pars de la référence complète du mod. Les clés
         <code>UI_KAO_SYSTEM_</code> sont techniques et verrouillées.
       </p>
+      <p>
+        <strong>Télécharger mon pack</strong> donne le fichier à déposer dans
+        <code>Zomboid/Lua/SIF-Olsann/traductions/</code>.
+        <strong>Exporter pour le mod</strong> donne un <code>UI.json</code>
+        complet et trié, à remplacer tel quel dans le mod — réservé au
+        développeur, il intègre les textes définitivement.
+      </p>
     </div>
 
     <div id="drop" class="drop">
@@ -254,13 +261,15 @@
           <option value="issue">Problèmes</option>
           <option value="all">Tout, système compris</option>
         </select>
-        <button id="download" class="primary">Télécharger</button>
+        <button id="download" class="primary">Télécharger mon pack</button>
+        <button id="export-mod" title="UI.json complet, trié, prêt à remplacer celui du mod">Exporter pour le mod</button>
         <div class="stats">
           <span><b id="stat-fam">0</b> familles</span>
           <span class="is-new"><b id="stat-new">0</b> nouvelles</span>
           <span><b id="stat-dirty">0</b> modifiées</span>
         </div>
       </div>
+      <p id="export-note" style="font-size:12.5px;color:var(--muted);margin:-6px 0 14px"></p>
       <div id="obsolete" class="note hidden"></div>
       <div id="list"></div>
       <p id="no-match" class="empty hidden">Aucune entrée ne correspond.</p>
@@ -3578,32 +3587,41 @@ function renderFamily(fam) {
   if (fam.gap !== null) {
     const fix = document.createElement("button");
     fix.className = "flag";
-    fix.style.margin = "0 16px 6px";
+    fix.style.margin = "0 14px 4px";
     fix.textContent = "trou en " + pad(fam.gap) + " — la suite ne sort jamais · réparer";
     fix.addEventListener("click", () => { renumber(fam); render(); });
     block.appendChild(fix);
   }
 
-  const noteRow = document.createElement("div");
-  noteRow.className = "note-row";
-  const label = document.createElement("label");
-  label.textContent = "Note";
-  const noteArea = document.createElement("textarea");
-  noteArea.className = "note-field";
-  noteArea.rows = 1;
-  noteArea.id = "note-" + fam.base;
-  noteArea.title = "Description fournie par le mod. La réécrire l'enregistre dans ton fichier.";
-  noteArea.value = fam.note;
-  noteArea.addEventListener("input", () => { fam.note = noteArea.value; autoGrow(noteArea); });
-  label.htmlFor = noteArea.id;
-  noteRow.append(label, noteArea);
-  block.appendChild(noteRow);
+  // La note automatique repetait la description du groupe et le titre de la
+  // section : deux fois la meme information, une ligne perdue par famille.
+  // Elle survit en infobulle sur la cle ; le champ n'apparait que si le
+  // streamer a ecrit la sienne.
+  const hasNote = fam.note.trim() !== "" && fam.note !== fam.autoNote;
+  if (hasNote || fam.showNote) block.appendChild(renderNote(fam));
 
-  fam.variants.forEach((_, i) => block.appendChild(renderEntry(fam, i)));
+  fam.variants.forEach((_, i) => block.appendChild(renderEntry(fam, i, hasNote || fam.showNote)));
   return block;
 }
 
-function renderEntry(fam, i) {
+function renderNote(fam) {
+  const row = document.createElement("div");
+  row.className = "note-row";
+  const label = document.createElement("label");
+  label.textContent = "Note";
+  const area = document.createElement("textarea");
+  area.className = "note-field";
+  area.rows = 1;
+  area.id = "note-" + fam.base;
+  area.placeholder = "Pourquoi ce texte, quand il se déclenche…";
+  area.value = fam.note === fam.autoNote ? "" : fam.note;
+  area.addEventListener("input", () => { fam.note = area.value; autoGrow(area); });
+  label.htmlFor = area.id;
+  row.append(label, area);
+  return row;
+}
+
+function renderEntry(fam, i, noteShown) {
   const variant = fam.variants[i];
   const row = document.createElement("div");
   row.className = "entry";
@@ -3621,7 +3639,7 @@ function renderEntry(fam, i) {
   } else {
     keyCell.textContent = short || fam.base;
   }
-  keyCell.title = keyAt(fam, i);
+  keyCell.title = keyAt(fam, i) + " " + defaultNote(fam.base);
   row.appendChild(keyCell);
 
   const main = document.createElement("div");
@@ -3670,6 +3688,15 @@ function renderEntry(fam, i) {
 
   refresh();
   meta.append(info, reset);
+
+  if (i === 0 && !noteShown && !fam.readOnly) {
+    const addNote = document.createElement("button");
+    addNote.className = "ghost";
+    addNote.textContent = "+ note";
+    addNote.title = defaultNote(fam.base);
+    addNote.addEventListener("click", () => { fam.showNote = true; fam.note = ""; render(); });
+    meta.appendChild(addNote);
+  }
   main.append(area, meta);
   row.appendChild(main);
 
@@ -3710,6 +3737,37 @@ function updateStats() {
   $("stat-fam").textContent = state.families.length;
   $("stat-dirty").textContent = dirty;
   $("stat-new").textContent = fresh;
+}
+
+/// Export destine au DEVELOPPEUR : remplace directement
+/// media/lua/shared/Translate/FR/UI.json.
+///
+/// Deux differences avec le pack du streamer, et elles comptent :
+/// - toutes les cles sont presentes, meme celles qu'il n'a pas touchees, sinon
+///   le mod perdrait des textes ;
+/// - elles sont TRIEES, comme dans le fichier du mod. Sans ca un git diff
+///   afficherait 571 lignes deplacees au lieu des quelques-unes modifiees.
+/// Les notes restent dehors : elles documentent le pack, elles n'ont rien a
+/// faire dans un fichier livre a tous les joueurs.
+function buildModExport() {
+  const out = {};
+  for (const fam of state.families) {
+    fam.variants.forEach((v, i) => { out[keyAt(fam, i)] = v.value; });
+  }
+  const sorted = {};
+  for (const key of Object.keys(out).sort()) sorted[key] = out[key];
+  return JSON.stringify(sorted, null, 2) + String.fromCharCode(10);
+}
+
+/// Ce que l'export change par rapport a la reference du mod
+function exportDiff() {
+  const out = JSON.parse(buildModExport());
+  let changed = 0, added = 0;
+  for (const [key, value] of Object.entries(out)) {
+    if (!(key in REF_TEXTS)) added++;
+    else if (REF_TEXTS[key] !== value) changed++;
+  }
+  return { changed, added, removed: Object.keys(REF_TEXTS).filter(k => !(k in out)).length };
 }
 
 function buildOutput() {
@@ -3772,6 +3830,17 @@ $("file").addEventListener("change", e => {
 $("search").addEventListener("input", render);
 $("filter").addEventListener("change", render);
 $("download").addEventListener("click", () => download(buildOutput(), state.fileName));
+$("export-mod").addEventListener("click", () => {
+  const d = exportDiff();
+  const bits = [];
+  if (d.changed) bits.push(d.changed + " modifiée" + (d.changed > 1 ? "s" : ""));
+  if (d.added) bits.push(d.added + " ajoutée" + (d.added > 1 ? "s" : ""));
+  if (d.removed) bits.push(d.removed + " retirée" + (d.removed > 1 ? "s" : ""));
+  $("export-note").textContent = bits.length
+    ? "UI.json exporté — " + bits.join(", ") + " par rapport à la v" + MOD_VERSION + "."
+    : "UI.json exporté — identique à la v" + MOD_VERSION + ".";
+  download(buildModExport(), "UI.json");
+});
 
 const drop = $("drop");
 for (const ev of ["dragenter", "dragover"])
