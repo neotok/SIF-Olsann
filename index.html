@@ -1,0 +1,3894 @@
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIF-Olsann — personnalisation</title>
+
+<style>
+  :root {
+    --bg: #f6f2eb; --surface: #fff; --surface-2: #fbf8f3;
+    --border: #e3dbcd; --border-strong: #cfc4b1;
+    --text: #221e19; --muted: #7a7167;
+    --accent: #a85f1e; --accent-soft: #f2e4d3; --on-accent: #fffaf4;
+    --ok: #4a7a3c; --ok-soft: #e6efe2;
+    --new: #2f6f8f; --new-soft: #dceaf2;
+    --warn: #a8501e; --warn-soft: #f8e6da;
+    --shadow: 0 1px 2px rgba(34,30,25,.05), 0 4px 16px rgba(34,30,25,.04);
+    --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14120f; --surface: #1d1a16; --surface-2: #232019;
+      --border: #2f2a22; --border-strong: #453e33;
+      --text: #eae3d9; --muted: #968c7d;
+      --accent: #d89a4e; --accent-soft: #33291b; --on-accent: #1a1510;
+      --ok: #8fbd77; --ok-soft: #232c1f;
+      --new: #7fb6d4; --new-soft: #1c2a33;
+      --warn: #e0954f; --warn-soft: #33251a;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.22);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14120f; --surface: #1d1a16; --surface-2: #232019;
+    --border: #2f2a22; --border-strong: #453e33;
+    --text: #eae3d9; --muted: #968c7d;
+    --accent: #d89a4e; --accent-soft: #33291b; --on-accent: #1a1510;
+    --ok: #8fbd77; --ok-soft: #232c1f;
+    --new: #7fb6d4; --new-soft: #1c2a33;
+    --warn: #e0954f; --warn-soft: #33251a;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.22);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:var(--sans);
+         font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1060px; margin:0 auto; padding:0 20px; }
+
+  header { padding:40px 0 18px; }
+  h1 { margin:0 0 8px; font-size:27px; line-height:1.15; letter-spacing:-.02em;
+       font-weight:620; text-wrap:balance; }
+  .lede { margin:0; max-width:64ch; color:var(--muted); }
+  .version { font-family:var(--mono); font-size:12px; color:var(--muted); }
+
+  /* onglets */
+  .tabs { display:flex; gap:4px; border-bottom:1px solid var(--border); margin:22px 0 24px; }
+  .tab { font:inherit; font-size:14px; font-weight:540; color:var(--muted);
+         background:none; border:none; border-bottom:2px solid transparent;
+         padding:9px 16px; cursor:pointer; }
+  .tab:hover { color:var(--text); }
+  .tab[aria-selected="true"] { color:var(--accent); border-bottom-color:var(--accent); }
+  .tab:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+
+  code { font-family:var(--mono); font-size:.88em; background:var(--surface-2);
+         border:1px solid var(--border); border-radius:4px; padding:1px 5px; }
+
+  .note { background:var(--surface); border:1px solid var(--border); border-radius:10px;
+          padding:14px 16px; margin-bottom:18px; box-shadow:var(--shadow);
+          font-size:13.5px; color:var(--muted); }
+  .note strong { color:var(--text); font-weight:600; }
+  .note h2 { margin:0 0 6px; font-size:12px; font-weight:660; letter-spacing:.04em;
+             text-transform:uppercase; color:var(--accent); }
+
+  button { font:inherit; font-size:14px; font-weight:520; color:var(--text);
+           background:var(--surface); border:1px solid var(--border-strong);
+           border-radius:7px; padding:7px 14px; cursor:pointer;
+           transition:background .12s, border-color .12s, color .12s; }
+  button:hover { background:var(--surface-2); border-color:var(--accent); }
+  button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  button:disabled { opacity:.45; cursor:default; }
+  button:disabled:hover { background:var(--surface); border-color:var(--border-strong); }
+  .primary { background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:580; }
+  .primary:hover { filter:brightness(1.08); background:var(--accent); border-color:var(--accent); }
+  .ghost { border-color:transparent; background:none; color:var(--muted); padding:4px 8px; font-size:12.5px; }
+  .ghost:hover { background:var(--surface-2); border-color:var(--border); color:var(--text); }
+
+  .drop { border:1.5px dashed var(--border-strong); border-radius:12px; background:var(--surface);
+          padding:32px 24px; text-align:center; transition:border-color .15s, background .15s; }
+  .drop.over { border-color:var(--accent); background:var(--accent-soft); }
+  .drop p { margin:0 0 14px; color:var(--muted); font-size:14px; }
+
+  .toolbar { position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:10px;
+             align-items:center; padding:12px 0; margin-bottom:18px;
+             background:color-mix(in srgb, var(--bg) 92%, transparent);
+             backdrop-filter:blur(8px); border-bottom:1px solid var(--border); }
+  input[type="search"], input[type="text"], input[type="number"], select {
+    font:inherit; font-size:14px; color:var(--text); background:var(--surface);
+    border:1px solid var(--border-strong); border-radius:7px; padding:7px 11px; }
+  input[type="search"] { flex:1 1 200px; min-width:0; }
+  input:focus-visible, select:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
+
+  .stats { display:flex; gap:14px; font-size:12.5px; color:var(--muted);
+           font-variant-numeric:tabular-nums; margin-left:auto; }
+  .stats b { color:var(--text); font-weight:620; }
+  .stats .is-new b { color:var(--new); }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px;
+          margin-bottom:14px; overflow:hidden; box-shadow:var(--shadow); }
+  .card-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+               padding:12px 16px 10px; background:var(--surface-2); border-bottom:1px solid var(--border); }
+  .card-name { font-family:var(--mono); font-size:14px; font-weight:600; }
+  .card-desc { font-size:13px; color:var(--muted); padding:10px 16px 0; }
+
+  .chip { font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+          color:var(--accent); background:var(--accent-soft); border-radius:4px; padding:2px 7px; }
+  .chip.locked { color:var(--muted); background:var(--surface); border:1px solid var(--border); }
+  .chip.new { color:var(--new); background:var(--new-soft); }
+  .count { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .flag { font-size:11.5px; font-weight:600; color:var(--warn); background:var(--warn-soft);
+          border:1px solid transparent; border-radius:4px; padding:3px 8px; cursor:pointer; }
+  .flag:hover { border-color:var(--warn); }
+
+  textarea { font:inherit; font-size:14px; line-height:1.5; color:var(--text);
+             background:var(--surface); border:1px solid var(--border); border-radius:6px;
+             padding:6px 9px; width:100%; resize:vertical; min-height:34px; overflow:hidden; }
+  textarea:focus-visible { outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent); }
+  textarea.note-field { font-size:13px; color:var(--muted); font-style:italic; background:var(--surface-2); }
+  textarea.dirty { border-color:var(--ok); background:var(--ok-soft); }
+  textarea.is-new { border-color:var(--new); background:var(--new-soft); }
+  textarea.mismatch { border-color:var(--warn); background:var(--warn-soft); }
+  textarea[readonly] { background:var(--surface-2); color:var(--muted); cursor:default; }
+
+  .note-row { padding:10px 16px; border-bottom:1px solid var(--border);
+              display:flex; gap:10px; align-items:flex-start; }
+  .note-row label { font-size:11px; font-weight:660; letter-spacing:.04em; text-transform:uppercase;
+                    color:var(--muted); padding-top:7px; flex:0 0 auto; }
+
+  .entry { display:grid; grid-template-columns:230px 1fr auto; gap:12px; padding:10px 16px;
+           align-items:start; border-top:1px solid var(--border); }
+  .entry:first-of-type { border-top:none; }
+  .entry-key { font-family:var(--mono); font-size:12px; color:var(--muted);
+               padding-top:8px; word-break:break-all; }
+  .entry-key b { color:var(--text); font-weight:620; }
+  .entry-key .added { color:var(--new); font-weight:620; }
+  .entry-main { min-width:0; }
+  .entry-meta { display:flex; gap:10px; align-items:center; margin-top:5px; min-height:18px; }
+  .entry-meta small { font-size:11.5px; color:var(--muted); }
+  .entry-meta .bad { color:var(--warn); font-weight:600; }
+  .entry-actions { display:flex; gap:5px; padding-top:3px; }
+  .icon { width:30px; height:30px; padding:0; display:grid; place-items:center;
+          font-size:17px; line-height:1; color:var(--muted); border-radius:6px; }
+  .icon:hover { color:var(--accent); border-color:var(--accent); background:var(--surface-2); }
+  .icon.minus:hover { color:var(--warn); border-color:var(--warn); background:var(--warn-soft); }
+  @media (max-width:720px) {
+    .entry { grid-template-columns:1fr auto; gap:5px 10px; }
+    .entry-key { grid-column:1/-1; padding-top:0; }
+  }
+
+  /* parametres (configuration + Streamer.bot) */
+  .param { display:grid; grid-template-columns:190px 200px 1fr; gap:12px;
+           padding:8px 16px; align-items:center; border-top:1px solid var(--border); }
+  .param-name { font-family:var(--mono); font-size:12.5px; }
+  .param-name .req { color:var(--warn); }
+  .param-desc { font-size:12.5px; color:var(--muted); }
+  .param input, .param select { width:100%; }
+  .param.changed .param-name { color:var(--ok); font-weight:620; }
+  @media (max-width:760px) {
+    .param { grid-template-columns:1fr; gap:4px; }
+    .param-desc { padding-bottom:4px; }
+  }
+
+  pre.out { font-family:var(--mono); font-size:13px; line-height:1.5; margin:0;
+            padding:14px 16px; background:var(--surface-2); border:1px solid var(--border);
+            border-radius:8px; white-space:pre-wrap; word-break:break-word; }
+
+  .empty { text-align:center; color:var(--muted); padding:44px 20px; font-size:14px; }
+  .hidden { display:none !important; }
+  footer { padding:32px 0 60px; color:var(--muted); font-size:12.5px;
+           border-top:1px solid var(--border); margin-top:36px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>SIF-Olsann — personnalisation</h1>
+    <p class="lede">
+      Écrire ses propres répliques, régler les actions, fabriquer une commande
+      Streamer.bot. Tout se passe dans le navigateur : aucun fichier n'est envoyé
+      nulle part.
+    </p>
+    <p class="version">référence du mod : v<span id="mod-version"></span></p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="trad" aria-selected="true">Traductions</button>
+    <button class="tab" role="tab" data-tab="config" aria-selected="false">Configuration</button>
+    <button class="tab" role="tab" data-tab="bot" aria-selected="false">Streamer.bot</button>
+  </div>
+
+  <!-- ================= TRADUCTIONS ================= -->
+  <section id="panel-trad" role="tabpanel">
+    <div class="note">
+      <h2>Comment ça marche</h2>
+      <p>
+        Charge ton fichier : les clés que le mod a ajoutées depuis sont
+        <strong>insérées automatiquement</strong> avec leur texte d'origine et
+        signalées en bleu. Tu n'as plus qu'à écrire tes versions.
+      </p>
+      <p>
+        Sans fichier, tu pars de la référence complète du mod. Les clés
+        <code>UI_KAO_SYSTEM_</code> sont techniques et verrouillées.
+      </p>
+    </div>
+
+    <div id="drop" class="drop">
+      <p>Dépose ton fichier de traduction, ou pars de la référence</p>
+      <input id="file" type="file" accept=".json,application/json" hidden>
+      <button class="primary" id="pick">Charger mon fichier</button>
+      <button id="fresh">Partir de la référence</button>
+      <p id="drop-error" style="color:var(--warn);margin-top:14px" class="hidden"></p>
+    </div>
+
+    <div id="editor" class="hidden">
+      <div class="toolbar">
+        <input type="search" id="search" placeholder="Chercher une clé, un texte, une note…" autocomplete="off">
+        <select id="filter">
+          <option value="all">Tout</option>
+          <option value="new">Nouvelles clés</option>
+          <option value="dirty">Modifiées</option>
+          <option value="editable">Modifiables</option>
+          <option value="issue">Problèmes</option>
+        </select>
+        <button id="download" class="primary">Télécharger</button>
+        <div class="stats">
+          <span><b id="stat-fam">0</b> familles</span>
+          <span class="is-new"><b id="stat-new">0</b> nouvelles</span>
+          <span><b id="stat-dirty">0</b> modifiées</span>
+        </div>
+      </div>
+      <div id="obsolete" class="note hidden"></div>
+      <div id="list"></div>
+      <p id="no-match" class="empty hidden">Aucune entrée ne correspond.</p>
+    </div>
+  </section>
+
+  <!-- ================= CONFIGURATION ================= -->
+  <section id="panel-config" class="hidden" role="tabpanel">
+    <div class="note">
+      <h2>config.json</h2>
+      <p>
+        Les valeurs affichées sont celles du mod. Ne change que ce que tu veux :
+        le fichier téléchargé ne contient <strong>que tes écarts</strong>, tout le
+        reste continue de suivre les mises à jour.
+      </p>
+      <p>
+        Une commande envoyée par un viewer garde toujours le dernier mot sur ces
+        valeurs. À déposer dans <code>Zomboid/Lua/SIF-Olsann/</code>.
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <input type="search" id="cfg-search" placeholder="Chercher une action…" autocomplete="off">
+      <input type="file" id="cfg-file" accept=".json,application/json" hidden>
+      <button id="cfg-pick">Charger un config.json</button>
+      <button id="cfg-download" class="primary">Télécharger</button>
+      <div class="stats"><span><b id="cfg-count">0</b> valeurs modifiées</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="card-name">tag</span><span class="chip">identité</span></div>
+      <div class="param">
+        <div class="param-name">tag</div>
+        <div><input type="text" id="cfg-tag" placeholder="olsann" autocomplete="off"></div>
+        <div class="param-desc">
+          <code>olsann</code> garde la tenue et la musique de fin de vague.
+          Tout autre texte ne laisse que la réplique et le son.
+        </div>
+      </div>
+    </div>
+
+    <div id="cfg-list"></div>
+  </section>
+
+  <!-- ================= STREAMER.BOT ================= -->
+  <section id="panel-bot" class="hidden" role="tabpanel">
+    <div class="note">
+      <h2>Fabriquer une commande</h2>
+      <p>
+        Choisis une action, règle ce que tu veux, copie la ligne. C'est ce que
+        Streamer.bot doit écrire dans <code>SIF.txt</code>, une ligne par action.
+      </p>
+      <p>
+        Seuls les paramètres que tu coches sont écrits — les autres prennent la
+        valeur du mod ou de ton <code>config.json</code>.
+      </p>
+    </div>
+
+    <div class="toolbar">
+      <select id="bot-action" style="flex:1 1 240px"></select>
+      <label style="font-size:13.5px;color:var(--muted);display:flex;gap:6px;align-items:center">
+        <input type="checkbox" id="bot-viewer" checked> inclure <code>viewer</code>
+      </label>
+      <button id="bot-copy" class="primary">Copier</button>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-name" id="bot-name"></span>
+        <span class="chip" id="bot-cat"></span>
+      </div>
+      <p class="card-desc" id="bot-desc"></p>
+      <div id="bot-params"></div>
+    </div>
+
+    <pre class="out" id="bot-out"></pre>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:10px" id="bot-copied"></p>
+  </section>
+
+  <footer>
+    Rien ne sort du navigateur : les fichiers sont lus et réécrits sur place.
+    L'ordre des clés est préservé, les notes sont insérées avant la famille
+    qu'elles décrivent, et la numérotation des variantes reste continue.
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+const MOD_VERSION = "7.0.0";
+const REF_ACTIONS = [
+  {
+    "category": "environment",
+    "description": "Declenche une alarme de maison ou de voiture, avec gyrophare rouge clignotant sur la source",
+    "examples": [
+      "{ type = \"alarm\", viewer = \"%user%\" }",
+      "{ type = \"alarm\", car = true, viewer = \"%user%\" }"
+    ],
+    "name": "alarm",
+    "params": [
+      {
+        "default": "50",
+        "description": "Rayon de recherche en cases",
+        "max": "60",
+        "min": "5",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "true",
+        "description": "Activer le gyrophare rouge clignotant",
+        "name": "rgb",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "60",
+        "description": "Duree de l'alarme en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "250",
+        "description": "Rayon du bruit qui attire les zombies",
+        "max": "5000",
+        "min": "100",
+        "name": "soundRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Alarme de voiture au lieu de maison",
+        "name": "car",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Joue un son d'ambiance tire au hasard (prive au joueur, sans impact sur les zombies)",
+    "examples": [
+      "{ type = \"ambianceSound\", viewer = \"%user%\" }"
+    ],
+    "name": "ambianceSound",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Fait temporairement oublier toutes les competences (niveaux a 0, puis restauration)",
+    "examples": [
+      "{ type = \"amnesia\", viewer = \"%user%\" }",
+      "{ type = \"amnesia\", duration = \"5min\", viewer = \"%user%\" }",
+      "{ type = \"amnesia\", duration = 300, viewer = \"%user%\" }"
+    ],
+    "name": "amnesia",
+    "params": [
+      {
+        "default": "120",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Barricade les fenetres et portes du batiment",
+    "examples": [
+      "{ type = \"barricadeEvent\", viewer = \"%user%\" }",
+      "{ type = \"barricadeEvent\", radius = 150, viewer = \"%user%\" }"
+    ],
+    "name": "barricadeEvent",
+    "params": [
+      {
+        "default": "100",
+        "description": "Rayon de recherche pour le batiment",
+        "max": "500",
+        "min": "10",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Le joueur lache ce qu'il tient en main au sol",
+    "examples": [
+      "{ type = \"butterFingers\", viewer = \"%user%\" }",
+      "{ type = \"butterFingers\", includeSecondary = false, viewer = \"%user%\" }"
+    ],
+    "name": "butterFingers",
+    "params": [
+      {
+        "default": "true",
+        "description": "Lacher aussi la main secondaire",
+        "name": "includeSecondary",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Sabotage ou remise a neuf du vehicule actuel du joueur. Crash natif PZ scale par vitesse, Repair = remise a neuf complete (vehicle:repair natif)",
+    "examples": [
+      "{ type = \"carEvent\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Crash\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Crash\", crashForce = 30, crashDamage = 50, viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"FlatTire\", tireCount = 3, viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Engine\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"StripAll\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Repair\", viewer = \"%user%\" }"
+    ],
+    "name": "carEvent",
+    "params": [
+      {
+        "default": "StripAll",
+        "description": "Evenement vehicule a declencher",
+        "name": "part",
+        "required": false,
+        "type": "string",
+        "values": [
+          "Crash",
+          "FlatTire",
+          "Engine",
+          "GasTank",
+          "StripAll",
+          "Repair"
+        ]
+      },
+      {
+        "default": "1",
+        "description": "Nombre de pneus creves (FlatTire)",
+        "max": "4",
+        "min": "1",
+        "name": "tireCount",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "15",
+        "description": "Force d'impact du crash (Crash)",
+        "max": "50",
+        "min": "5",
+        "name": "crashForce",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "20",
+        "description": "Degats infliges au joueur (Crash)",
+        "max": "100",
+        "min": "0",
+        "name": "crashDamage",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0.35",
+        "description": "Multiplicateur masse pour la force physique Bullet (Crash)",
+        "max": "2.0",
+        "min": "0.01",
+        "name": "crashMassScale",
+        "required": false,
+        "step": "0.05",
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Supprime la repartie du joueur (declenchements automatises)",
+        "name": "silent",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Fait tomber des epaves en feu autour du joueur (le barrage suit ses deplacements). Chute visuelle avec sifflement, ombre grandissante, explosion a l'impact, zombies projetes et flash d'ecran a proximite",
+    "examples": [
+      "{ type = \"carMageddon\", viewer = \"%user%\" }",
+      "{ type = \"carMageddon\", count = 10, delay = 1000, viewer = \"%user%\" }",
+      "{ type = \"carMageddon\", count = 30, duration = 120, viewer = \"%user%\" }"
+    ],
+    "name": "carMageddon",
+    "params": [
+      {
+        "default": "50",
+        "description": "Nombre d'epaves",
+        "max": "200",
+        "min": "1",
+        "name": "count",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Distance min de chute",
+        "max": "100",
+        "min": "1",
+        "name": "minDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "50",
+        "description": "Distance max de chute",
+        "max": "200",
+        "min": "10",
+        "name": "maxDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "5",
+        "description": "Rayon du feu par epave",
+        "max": "15",
+        "min": "0",
+        "name": "fireRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Duree totale de l'event en secondes (ou \"3min\") ; les epaves sont reparties dessus",
+        "max": "1800",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Delai entre impacts en ms (utilise seulement si fourni sans duration)",
+        "max": "10000",
+        "min": "0",
+        "name": "delay",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Coup de fouet : efface fatigue et raideurs musculaires, restaure l'endurance",
+    "examples": [
+      "{ type = \"coffee\", viewer = \"%user%\" }"
+    ],
+    "name": "coffee",
+    "params": []
+  },
+  {
+    "category": "fun",
+    "description": "Spawn un garde du corps policier sprinteur au nom du viewer : il suit le joueur en ouvrant les portes sur son chemin, frappe les zombies proches et se fait attaquer par eux. Il repart au bout de la duree, ou plus tot si les zombies l'abattent.",
+    "examples": [
+      "{ type = \"companion\", viewer = \"%user%\" }",
+      "{ type = \"companion\", style = \"zombie\", viewer = \"%user%\" }",
+      "{ type = \"companion\", duration = \"5min\", damage = 4, viewer = \"%user%\" }"
+    ],
+    "name": "companion",
+    "params": [
+      {
+        "default": "180",
+        "description": "Duree de la garde en temps reel (secondes)",
+        "max": "900",
+        "min": "30",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "2",
+        "description": "Degats infliges par coup aux zombies",
+        "max": "5",
+        "min": "0.5",
+        "name": "damage",
+        "required": false,
+        "step": "0.5",
+        "type": "number"
+      },
+      {
+        "default": "katana",
+        "description": "katana a deux mains, ou attaque a la maniere d'un zombie",
+        "name": "style",
+        "required": false,
+        "type": "string",
+        "values": [
+          "katana",
+          "zombie"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Boule a facettes improvisee : musique, faisceaux de couleur qui balayent le sol, taches de lumiere scintillantes et le joueur qui chante a tue-tete. Le vacarme attire les zombies.",
+    "examples": [
+      "{ type = \"discoInferno\", viewer = \"%user%\" }",
+      "{ type = \"discoInferno\", duration = 120, soundRadius = 250, viewer = \"%user%\" }"
+    ],
+    "name": "discoInferno",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "10",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "120",
+        "description": "Rayon du bruit qui attire les zombies",
+        "max": "500",
+        "min": "20",
+        "name": "soundRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "15",
+        "description": "Portee des faisceaux de la boule disco",
+        "max": "30",
+        "min": "5",
+        "name": "lightRadius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Compteur de dons cumulatif avec spawn de zombies par viewer",
+    "examples": [
+      "{ type = \"donation\", viewer = \"%user%\" }",
+      "{ type = \"donation\", amount = 500, source = \"bits\", viewer = \"%user%\" }",
+      "{ type = \"donation\", amount = 1, source = \"sub\", viewer = \"%user%\" }",
+      "{ type = \"donation\", amount = 10, source = \"gift\", viewer = \"%user%\" }"
+    ],
+    "name": "donation",
+    "params": [
+      {
+        "description": "Montant brut du don, dans l'unite de la source",
+        "max": "10000",
+        "min": "1",
+        "name": "amount",
+        "required": true,
+        "type": "number"
+      },
+      {
+        "default": "Anonymous",
+        "description": "Nom du viewer donateur",
+        "name": "viewer",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "raw",
+        "description": "Origine du don. Convertit le montant en points de don (bits x1, abonnement x100, don offert x100 par abonnement, monnaie x100 soit en centimes). \"raw\" laisse le montant tel quel.",
+        "name": "source",
+        "required": false,
+        "type": "string",
+        "values": [
+          "raw",
+          "bits",
+          "sub",
+          "gift",
+          "money"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Rend le joueur ivre avec effets visuels et comportementaux (titubement : glissades aleatoires proportionnelles au niveau, blackout au-dela de 90). Chaque declenchement ajoute au niveau courant (cumulable jusqu'a 100)",
+    "examples": [
+      "{ type = \"drunk\", viewer = \"%user%\" }",
+      "{ type = \"drunk\", level = 30, duration = \"10min\", viewer = \"%user%\" }"
+    ],
+    "name": "drunk",
+    "params": [
+      {
+        "default": "50",
+        "description": "Quantite d'ivresse ajoutee au niveau courant (cumulable jusqu'a 100 : deux declenchements suffisent a saturer)",
+        "max": "100",
+        "min": "1",
+        "name": "level",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Casse les fenetres a proximite du joueur",
+    "examples": [
+      "{ type = \"explodeWindow\", viewer = \"%user%\" }",
+      "{ type = \"explodeWindow\", radius = 15, count = 3, viewer = \"%user%\" }"
+    ],
+    "name": "explodeWindow",
+    "params": [
+      {
+        "default": "30",
+        "description": "Rayon de recherche en cases",
+        "max": "60",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Nombre de fenetres a casser",
+        "max": "25",
+        "min": "1",
+        "name": "count",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Eteint tous les feux actifs sur la carte",
+    "examples": [
+      "{ type = \"extinguishFire\", viewer = \"%user%\" }"
+    ],
+    "name": "extinguishFire",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Active le mode invincible temporairement",
+    "examples": [
+      "{ type = \"godMode\", viewer = \"%user%\" }",
+      "{ type = \"godMode\", duration = \"10min\", viewer = \"%user%\" }",
+      "{ type = \"godMode\", duration = 600, viewer = \"%user%\" }"
+    ],
+    "name": "godMode",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Soigne completement le joueur (corps, mental, maladie, feu)",
+    "examples": [
+      "{ type = \"heal\", viewer = \"%user%\" }",
+      "{ type = \"heal\", minHealth = 50, fixMoodles = false, viewer = \"%user%\" }"
+    ],
+    "name": "heal",
+    "params": [
+      {
+        "default": "80",
+        "description": "Sante minimum (%) pour declencher",
+        "max": "100",
+        "min": "0",
+        "name": "minHealth",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "true",
+        "description": "Clear tous les moodles",
+        "name": "fixMoodles",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Declenche un evenement helicoptere -- vrai evenement vanilla, ou faux (son seul)",
+    "examples": [
+      "{ type = \"helicopter\", viewer = \"%user%\" }",
+      "{ type = \"helicopter\", fake = true, duration = 60, viewer = \"%user%\" }"
+    ],
+    "name": "helicopter",
+    "params": [
+      {
+        "default": "false",
+        "description": "Si true, joue seulement le son d'helico (faire croire), sans declencher le vrai evenement",
+        "name": "fake",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "30",
+        "description": "Duree du son en mode faux (secondes)",
+        "max": "300",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Change la condition des items tenus en main (full ou zero)",
+    "examples": [
+      "{ type = \"itemCondition\", viewer = \"%user%\" }",
+      "{ type = \"itemCondition\", action = \"zero\", viewer = \"%user%\" }"
+    ],
+    "name": "itemCondition",
+    "params": [
+      {
+        "default": "full",
+        "description": "Action sur la condition",
+        "name": "action",
+        "required": false,
+        "type": "string",
+        "values": [
+          "full",
+          "zero"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Donne des items au joueur (pool thematique ou item precis)",
+    "examples": [
+      "{ type = \"itemSpawn\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"good\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"medic\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"jackpot\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"Base.Crowbar\", itemNumber = 2, viewer = \"%user%\" }"
+    ],
+    "name": "itemSpawn",
+    "params": [
+      {
+        "default": "good",
+        "description": "Nom d'item PZ (ex: Base.Crowbar) ou pool. Le contenu des pools s'enrichit avec l'age du monde et l'anciennete du personnage (voir core/KAO_ItemPools.lua)",
+        "name": "item",
+        "required": false,
+        "type": "string",
+        "values": [
+          "good",
+          "medic",
+          "food",
+          "weapon",
+          "jackpot",
+          "fun",
+          "bad",
+          "heavy"
+        ]
+      },
+      {
+        "default": "1",
+        "description": "Quantite d'items. Ramenee a 2 au maximum pour le pool heavy",
+        "max": "50",
+        "min": "1",
+        "name": "itemNumber",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Fondu au noir avec image et son effrayant (n'attire pas les zombies)",
+    "examples": [
+      "{ type = \"jumpscare\" }"
+    ],
+    "name": "jumpscare",
+    "params": [
+      {
+        "default": "sadako",
+        "description": "Image affichee (\"custom\" utilise customImage)",
+        "name": "image",
+        "required": false,
+        "type": "string",
+        "values": [
+          "sadako",
+          "custom"
+        ]
+      },
+      {
+        "description": "Chemin d'une image custom (si image=\"custom\")",
+        "name": "customImage",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "scream",
+        "description": "Nom du son SIF a jouer avec l'image",
+        "name": "sound",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Active/desactive l'eau et l'electricite via SandboxOptions",
+    "examples": [
+      "{ type = \"kentuckyUtilities\", viewer = \"%user%\" }",
+      "{ type = \"kentuckyUtilities\", action = \"on\", viewer = \"%user%\" }",
+      "{ type = \"kentuckyUtilities\", action = \"off\", ingameDuration = 5, viewer = \"%user%\" }"
+    ],
+    "name": "kentuckyUtilities",
+    "params": [
+      {
+        "default": "off",
+        "description": "Activer ou desactiver les utilites",
+        "name": "action",
+        "required": false,
+        "type": "string",
+        "values": [
+          "on",
+          "off"
+        ]
+      },
+      {
+        "default": "24",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "168",
+        "min": "2",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Maximise temporairement tous les niveaux de competence du joueur",
+    "examples": [
+      "{ type = \"maximizeLevels\", viewer = \"%user%\" }",
+      "{ type = \"maximizeLevels\", ingameDuration = \"12h\", viewer = \"%user%\" }",
+      "{ type = \"maximizeLevels\", ingameDuration = 48, viewer = \"%user%\" }"
+    ],
+    "name": "maximizeLevels",
+    "params": [
+      {
+        "default": "6",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "720",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Active temporairement une migration massive de zombies convergant vers le joueur",
+    "examples": [
+      "{ type = \"migrationControl\", viewer = \"%user%\" }",
+      "{ type = \"migrationControl\", ingameDuration = 2, viewer = \"%user%\" }",
+      "{ type = \"migrationControl\", sprint = true, multiplier = 8, viewer = \"%user%\" }",
+      "{ type = \"migrationControl\", ingameDuration = \"30min\", multiplier = 8, sprint = true, viewer = \"%user%\" }"
+    ],
+    "name": "migrationControl",
+    "params": [
+      {
+        "default": "1",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "48",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "4",
+        "description": "Multiplicateur de population zombie",
+        "max": "20",
+        "min": "1",
+        "name": "multiplier",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Force les zombies a sprinter vers le joueur",
+        "name": "sprint",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Force la luminosite ambiante (intensite reglable) : la nuit c'est un bonus (on y voit clair), en journee c'est un malus (la vision s'assombrit, comme des lunettes NV en plein jour). Polarite du leaderboard adaptee automatiquement",
+    "examples": [
+      "{ type = \"nightVision\", viewer = \"%user%\" }",
+      "{ type = \"nightVision\", duration = \"10min\", intensity = 0.8, viewer = \"%user%\" }"
+    ],
+    "name": "nightVision",
+    "params": [
+      {
+        "default": "300",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "0.6",
+        "description": "Luminosite ambiante forcee (1 = plein jour)",
+        "max": "1",
+        "min": "0.3",
+        "name": "intensity",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Cauchemar -- rend le sommeil possible immediatement (comme l'option du clic droit), puis reveille le joueur en plein sommeil avec un zombie sans dents qui l'attaque dans la piece. Sans timeout : le prochain sommeil declenche l'event",
+    "examples": [
+      "{ type = \"nightmare\" }",
+      "{ type = \"nightmare\", sleepThreshold = 1, outfit = \"Police\", viewer = \"%user%\" }",
+      "{ type = \"nightmare\", sound = \"SmashWindow\", panic = 80, viewer = \"%user%\" }"
+    ],
+    "name": "nightmare",
+    "params": [
+      {
+        "default": "2",
+        "description": "Heures de jeu de sommeil avant declenchement",
+        "max": "8",
+        "min": "0.5",
+        "name": "sleepThreshold",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "laugh",
+        "description": "Son effrayant",
+        "name": "sound",
+        "required": false,
+        "type": "string",
+        "values": [
+          "laugh",
+          "ZombieSurprisedPlayer",
+          "SmashWindow",
+          "WoodDoorBreak"
+        ]
+      },
+      {
+        "default": "100",
+        "description": "Niveau de panique",
+        "max": "100",
+        "min": "0",
+        "name": "panic",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "1",
+        "description": "Niveau de stress",
+        "max": "1",
+        "min": "0",
+        "name": "stress",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "freddy",
+        "description": "Outfit du zombie (\"freddy\" = Authentic Z, nom vanilla, ou \"random\")",
+        "name": "outfit",
+        "required": false,
+        "type": "string",
+        "values": [
+          "freddy",
+          "random"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Ouvre la porte la plus proche dans un rayon",
+    "examples": [
+      "{ type = \"openDoor\", viewer = \"%user%\" }",
+      "{ type = \"openDoor\", radius = 15, viewer = \"%user%\" }"
+    ],
+    "name": "openDoor",
+    "params": [
+      {
+        "default": "30",
+        "description": "Rayon de recherche en cases",
+        "max": "60",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Crise de panique : panique et stress au maximum pendant la duree",
+    "examples": [
+      "{ type = \"panicAttack\", viewer = \"%user%\" }",
+      "{ type = \"panicAttack\", duration = \"2min\", viewer = \"%user%\" }",
+      "{ type = \"panicAttack\", duration = 90, viewer = \"%user%\" }"
+    ],
+    "name": "panicAttack",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Faux bruits de zombies (grattements, pas, coups) autour du joueur, sans aucun danger reel",
+    "examples": [
+      "{ type = \"paranoia\", viewer = \"%user%\" }",
+      "{ type = \"paranoia\", duration = 120, viewer = \"%user%\" }"
+    ],
+    "name": "paranoia",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Vie supplementaire : si la sante passe sous le seuil, le joueur est soigne et tous les zombies proches meurent dans un flash lumineux",
+    "examples": [
+      "{ type = \"phoenix\", viewer = \"%user%\" }",
+      "{ type = \"phoenix\", threshold = 30, radius = 15, viewer = \"%user%\" }"
+    ],
+    "name": "phoenix",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree de la protection en temps reel (secondes)",
+        "max": "10800",
+        "min": "60",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "20",
+        "description": "Seuil de sante (%) qui declenche la renaissance",
+        "max": "50",
+        "min": "1",
+        "name": "threshold",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Rayon de kill des zombies en tuiles",
+        "max": "30",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Spawn un zombie pinata (lent, resistant) dont l'inventaire est bourre de butin : il suffit de le tuer et de fouiller le corps",
+    "examples": [
+      "{ type = \"pinata\", viewer = \"%user%\" }",
+      "{ type = \"pinata\", lootCount = 10, viewer = \"%user%\" }"
+    ],
+    "name": "pinata",
+    "params": [
+      {
+        "default": "12",
+        "description": "Distance de spawn en tuiles",
+        "max": "30",
+        "min": "5",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "6",
+        "description": "Nombre d'items places dans son inventaire",
+        "max": "15",
+        "min": "1",
+        "name": "lootCount",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Action gunner multi-variante inspiree de Die Hard et Rambo",
+    "examples": [
+      "{ type = \"playerGunner\", viewer = \"%user%\" }",
+      "{ type = \"playerGunner\", variant = \"rambo\", duration = 600, viewer = \"%user%\" }",
+      "{ type = \"playerGunner\", action = \"stop\", viewer = \"%user%\" }"
+    ],
+    "name": "playerGunner",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Variante du gunner (aleatoire si omis)",
+        "name": "variant",
+        "required": false,
+        "type": "string",
+        "values": [
+          "diehard",
+          "rambo",
+          "johnwick",
+          "killbill",
+          "highlander",
+          "samurai",
+          "deadpool",
+          "quiet"
+        ]
+      },
+      {
+        "default": "start",
+        "description": "Action a effectuer",
+        "name": "action",
+        "required": false,
+        "type": "string",
+        "values": [
+          "start",
+          "stop",
+          "halveTime"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Rend le personnage invisible a l'ecran du streamer (alpha de rendu a 0) pendant une duree. Le gameplay continue normalement : les zombies le voient toujours",
+    "examples": [
+      "{ type = \"playerHidden\", viewer = \"%user%\" }",
+      "{ type = \"playerHidden\", duration = 60, viewer = \"%user%\" }"
+    ],
+    "name": "playerHidden",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en secondes (ou \"1min\")",
+        "max": "120",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Rend le joueur invisible aux zombies temporairement. Le personnage reste visible a l'ecran, contrairement a playerHidden",
+    "examples": [
+      "{ type = \"playerInvisibleToZombie\", viewer = \"%user%\" }",
+      "{ type = \"playerInvisibleToZombie\", duration = \"2min\", viewer = \"%user%\" }",
+      "{ type = \"playerInvisibleToZombie\", duration = 120, viewer = \"%user%\" }"
+    ],
+    "name": "playerInvisibleToZombie",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Applique une attelle (fracture) sur les jambes + blessure aine",
+    "examples": [
+      "{ type = \"playerTchiTchi\", viewer = \"%user%\" }",
+      "{ type = \"playerTchiTchi\", duration = 60, legs = \"left\", viewer = \"%user%\" }"
+    ],
+    "name": "playerTchiTchi",
+    "params": [
+      {
+        "default": "30",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "both",
+        "description": "Jambes affectees",
+        "name": "legs",
+        "required": false,
+        "type": "string",
+        "values": [
+          "left",
+          "right",
+          "both"
+        ]
+      },
+      {
+        "default": "false",
+        "description": "Skip attelles",
+        "name": "noSplint",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "false",
+        "description": "Skip blessure aine",
+        "name": "noGroin",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Ajoute ou retire des traits du joueur",
+    "examples": [
+      "{ type = \"playerTrait\", viewer = \"%user%\" }",
+      "{ type = \"playerTrait\", trait = \"Athletic\", viewer = \"%user%\" }",
+      "{ type = \"playerTrait\", traitType = \"positive\", viewer = \"%user%\" }",
+      "{ type = \"playerTrait\", traitType = \"negative\", remove = true, viewer = \"%user%\" }"
+    ],
+    "name": "playerTrait",
+    "params": [
+      {
+        "description": "Nom du trait specifique (ex: Athletic, Brave, Smoker)",
+        "name": "trait",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "any",
+        "description": "Type de trait a selectionner",
+        "name": "traitType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "positive",
+          "negative",
+          "any"
+        ]
+      },
+      {
+        "default": "false",
+        "description": "Retirer le trait au lieu de l'ajouter",
+        "name": "remove",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Reveille le joueur et restaure son endurance",
+    "examples": [
+      "{ type = \"playerWakeup\", viewer = \"%user%\" }"
+    ],
+    "name": "playerWakeup",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Inflige des blessures aleatoires au joueur",
+    "examples": [
+      "{ type = \"randomInjury\", injury = \"bullet\", level = 3, viewer = \"%user%\" }",
+      "{ type = \"randomInjury\", viewer = \"%user%\" }"
+    ],
+    "name": "randomInjury",
+    "params": [
+      {
+        "description": "Type de blessure (aleatoire si omis)",
+        "name": "injury",
+        "required": false,
+        "type": "string",
+        "values": [
+          "bullet",
+          "fracture",
+          "scratch",
+          "cut",
+          "deepWound",
+          "burn",
+          "bleeding"
+        ]
+      },
+      {
+        "default": "2",
+        "description": "Niveau de gravite",
+        "max": "4",
+        "min": "1",
+        "name": "level",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Partie du corps specifique",
+        "name": "part",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Fait apparaitre des rats (optionnellement en feu) autour du joueur",
+    "examples": [
+      "{ type = \"ratExplosion\", viewer = \"%user%\" }",
+      "{ type = \"ratExplosion\", number = 5, radius = 5, burn = true, viewer = \"%user%\" }",
+      "{ type = \"ratExplosion\", number = 10, burn = false, viewer = \"%user%\" }"
+    ],
+    "name": "ratExplosion",
+    "params": [
+      {
+        "default": "5",
+        "description": "Nombre de rats",
+        "max": "200",
+        "min": "1",
+        "name": "number",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Rayon de spawn en tuiles",
+        "max": "50",
+        "min": "0",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "true",
+        "description": "Rats en feu",
+        "name": "burn",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Fait revivre les cadavres de zombies au sol",
+    "examples": [
+      "{ type = \"reanimateCorpses\", viewer = \"%user%\" }",
+      "{ type = \"reanimateCorpses\", radius = 20, viewer = \"%user%\" }",
+      "{ type = \"reanimateCorpses\", maxCorpses = 5, viewer = \"%user%\" }"
+    ],
+    "name": "reanimateCorpses",
+    "params": [
+      {
+        "default": "15",
+        "description": "Rayon de recherche en tuiles",
+        "max": "80",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Nombre max a reanimer",
+        "max": "100",
+        "min": "1",
+        "name": "maxCorpses",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Remet a zero toutes les donnees KAO (compteurs, timers, etc.)",
+    "examples": [
+      "{ type = \"resetData\", viewer = \"%user%\" }",
+      "{ type = \"resetData\", confirm = true, viewer = \"%user%\" }"
+    ],
+    "name": "resetData",
+    "params": [
+      {
+        "default": "false",
+        "description": "Doit etre true pour confirmer le reset",
+        "name": "confirm",
+        "required": true,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Cree un anneau de feu autour du joueur, avec son aleatoire",
+    "examples": [
+      "{ type = \"ringOfFire\", viewer = \"%user%\" }",
+      "{ type = \"ringOfFire\", radius = 10, points = 15, viewer = \"%user%\" }"
+    ],
+    "name": "ringOfFire",
+    "params": [
+      {
+        "default": "5",
+        "description": "Rayon de l'anneau en tuiles",
+        "max": "100",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "24",
+        "description": "Nombre de points de feu",
+        "max": "100",
+        "min": "1",
+        "name": "points",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Force un changement d'heure temporaire, avec coupure de courant a minuit.",
+    "examples": [
+      "{ type = \"setTime\", viewer = \"%user%\" }",
+      "{ type = \"setTime\", hour = 12, viewer = \"%user%\" }",
+      "{ type = \"setTime\", hour = 0, duration = \"5min\", viewer = \"%user%\" }"
+    ],
+    "name": "setTime",
+    "params": [
+      {
+        "default": "0",
+        "description": "Heure cible",
+        "max": "23",
+        "min": "0",
+        "name": "hour",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Duree reelle avant retour a l'heure normale (secondes)",
+        "max": "1800",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Controle la meteo du jeu (orage, blizzard, pluie, etc.). A l'expiration,",
+    "examples": [
+      "{ type = \"setWeather\", viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"storm\", viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"blizzard\", ingameDuration = 5, viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"rain\", rain = 0.8, viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"stop\", viewer = \"%user%\" }"
+    ],
+    "name": "setWeather",
+    "params": [
+      {
+        "default": "winter",
+        "description": "Type de meteo",
+        "name": "eventType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "storm",
+          "blizzard",
+          "winter",
+          "tropical",
+          "rain",
+          "stop"
+        ]
+      },
+      {
+        "default": "24",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "168",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "0.8",
+        "description": "Intensite de pluie ou de neige",
+        "max": "1",
+        "min": "0",
+        "name": "rain",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "description": "Override de temperature en degres",
+        "max": "50",
+        "min": "-50",
+        "name": "temp",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Valeur de temperature si temp est un boolean true",
+        "max": "50",
+        "min": "-50",
+        "name": "tempValue",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Fait crier le personnage pour attirer les zombies",
+    "examples": [
+      "{ type = \"shout\", viewer = \"%user%\" }",
+      "{ type = \"shout\", radius = 50, viewer = \"%user%\" }"
+    ],
+    "name": "shout",
+    "params": [
+      {
+        "default": "100",
+        "description": "Rayon d'attraction des zombies",
+        "max": "500",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Rend le joueur malade (rhume) pendant une duree definie",
+    "examples": [
+      "{ type = \"sick\", viewer = \"%user%\" }",
+      "{ type = \"sick\", ingameDuration = 24, coldStrength = 100, viewer = \"%user%\" }"
+    ],
+    "name": "sick",
+    "params": [
+      {
+        "default": "50",
+        "description": "Intensite du rhume",
+        "max": "100",
+        "min": "0",
+        "name": "coldStrength",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0.2",
+        "description": "Niveau de maladie",
+        "max": "1",
+        "min": "0",
+        "name": "sickness",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "0.5",
+        "description": "Stage degats froid",
+        "max": "1",
+        "min": "0",
+        "name": "coldDamageStage",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "12",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "168",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Joue un son meta aleatoire et cree un bruit distant",
+    "examples": [
+      "{ type = \"soundEvent\", viewer = \"%user%\" }",
+      "{ type = \"soundEvent\", sound = \"MetaDogBark\", viewer = \"%user%\" }"
+    ],
+    "name": "soundEvent",
+    "params": [
+      {
+        "description": "Force un son specifique",
+        "name": "sound",
+        "required": false,
+        "type": "string",
+        "values": [
+          "MetaAssaultRifle1",
+          "MetaPistol1",
+          "MetaPistol2",
+          "MetaPistol3",
+          "MetaShotgun1",
+          "MetaDogBark",
+          "MetaScream",
+          "MetaOwl",
+          "MetaWolfHowl",
+          "FemaleBeingEatenDeath",
+          "MaleBeingEatenDeath"
+        ]
+      },
+      {
+        "description": "Force un son par index",
+        "max": "11",
+        "min": "1",
+        "name": "soundIndex",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Joue un son UI predefini, une seule fois (aucun son en boucle)",
+    "examples": [
+      "{ type = \"sounds\", viewer = \"%user%\" }",
+      "{ type = \"sounds\", sound = \"random\", viewer = \"%user%\" }",
+      "{ type = \"sounds\", sound = \"Helicopter\", viewer = \"%user%\" }"
+    ],
+    "name": "sounds",
+    "params": [
+      {
+        "default": "SmashWindow",
+        "description": "Nom du son a jouer (\"random\" tire un son parmi le pool prive, sans impact sur les zombies)",
+        "name": "sound",
+        "required": false,
+        "type": "string",
+        "values": [
+          "SmashWindow",
+          "ZombieSurprisedPlayer",
+          "WoodDoorBreak",
+          "Helicopter",
+          "random"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Fait apparaitre un vehicule a proximite avec cle",
+    "examples": [
+      "{ type = \"spawnCar\", viewer = \"%user%\" }",
+      "{ type = \"spawnCar\", vehicle = \"Base.SportsCar\", viewer = \"%user%\" }"
+    ],
+    "name": "spawnCar",
+    "params": [
+      {
+        "description": "Type de vehicule PZ (aleatoire si omis)",
+        "name": "vehicle",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "70",
+        "description": "Condition min des pieces",
+        "max": "100",
+        "min": "0",
+        "name": "minCondition",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "100",
+        "description": "Condition max des pieces",
+        "max": "100",
+        "min": "0",
+        "name": "maxCondition",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "5",
+        "description": "Distance min de spawn",
+        "max": "50",
+        "min": "1",
+        "name": "minSpawnDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Distance max de spawn",
+        "max": "100",
+        "min": "1",
+        "name": "maxSpawnDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "20",
+        "description": "Distance extra si interieur",
+        "max": "100",
+        "min": "0",
+        "name": "indoorExtraDistance",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Declenche un evenement de maison (ex: judgeEvent)",
+    "examples": [
+      "{ type = \"startEvent\", viewer = \"%user%\" }",
+      "{ type = \"startEvent\", eventId = \"judgeEvent\", stripperCount = 10, viewer = \"TwitchUser123\" }"
+    ],
+    "name": "startEvent",
+    "params": [
+      {
+        "default": "5",
+        "description": "Nombre de zombies stripper spawnes",
+        "max": "20",
+        "min": "1",
+        "name": "stripperCount",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "16",
+        "description": "Surface max (tuiles) des pieces candidates",
+        "max": "100",
+        "min": "4",
+        "name": "maxRoomArea",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "judgeEvent",
+        "description": "Evenement a declencher",
+        "name": "eventId",
+        "required": true,
+        "type": "string",
+        "values": [
+          "judgeEvent"
+        ]
+      },
+      {
+        "description": "Nom du viewer pour attribution",
+        "name": "viewer",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Retire et depose au sol tous les vetements du joueur, puis le rhabille avec une tenue predefinie",
+    "examples": [
+      "{ type = \"stripPlayer\", viewer = \"%user%\" }",
+      "{ type = \"stripPlayer\", outfit = \"lapine\", viewer = \"%user%\" }",
+      "{ type = \"stripPlayer\", outfit = \"random\", dropRadius = 3, viewer = \"%user%\" }"
+    ],
+    "name": "stripPlayer",
+    "params": [
+      {
+        "default": "1",
+        "description": "Rayon de depot au sol",
+        "max": "10",
+        "min": "1",
+        "name": "dropRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "none",
+        "description": "Tenue posee apres le deshabillage",
+        "name": "outfit",
+        "required": false,
+        "type": "string",
+        "values": [
+          "none",
+          "random",
+          "lapine",
+          "lapineRose"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Mode invincible avec costume, kill-zone et cercle visuel autour du joueur. Variantes : Mario, Goku, The Mask, Torch (tirage aleatoire par defaut)",
+    "examples": [
+      "{ type = \"superMario\", viewer = \"%user%\" }",
+      "{ type = \"superMario\", variant = \"goku\", viewer = \"%user%\" }",
+      "{ type = \"superMario\", variant = \"theMask\", duration = 60, viewer = \"%user%\" }",
+      "{ type = \"superMario\", variant = \"torch\", viewer = \"%user%\" }"
+    ],
+    "name": "superMario",
+    "params": [
+      {
+        "default": "random",
+        "description": "Personnage/costume",
+        "name": "variant",
+        "required": false,
+        "type": "string",
+        "values": [
+          "random",
+          "mario",
+          "goku",
+          "theMask",
+          "torch"
+        ]
+      },
+      {
+        "default": "30",
+        "description": "Duree en temps reel (secondes)",
+        "max": "10800",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "2",
+        "description": "Rayon de kill des zombies en tuiles",
+        "max": "10",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Teleportation du joueur : vers une destination (mode to), sauvegarde de la position (mode save) ou retour a la position sauvegardee (mode back). Remplace moveTo/savePos/teleportBack",
+    "examples": [
+      "{ type = \"teleport\", viewer = \"%user%\" }",
+      "{ type = \"teleport\", location = \"Louisville\", viewer = \"%user%\" }",
+      "{ type = \"teleport\", mode = \"save\", viewer = \"%user%\" }",
+      "{ type = \"teleport\", mode = \"back\", viewer = \"%user%\" }"
+    ],
+    "name": "teleport",
+    "params": [
+      {
+        "default": "to",
+        "description": "Operation de teleportation",
+        "name": "mode",
+        "required": false,
+        "type": "string",
+        "values": [
+          "to",
+          "save",
+          "back"
+        ]
+      },
+      {
+        "default": "nearby",
+        "description": "Destination (mode to uniquement)",
+        "name": "location",
+        "required": false,
+        "type": "string",
+        "values": [
+          "nearby",
+          "MarchRidge",
+          "Louisville",
+          "Rosewood",
+          "Muldraugh",
+          "WestPoint",
+          "Riverside",
+          "Ekron",
+          "FallasLake",
+          "Brandenburg",
+          "RosewoodPrison",
+          "EchoCreek",
+          "Irvington"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Declenche une action aleatoire du registre (roulette russe pour le streamer)",
+    "examples": [
+      "{ type = \"viewerRoulette\", viewer = \"%user%\" }",
+      "{ type = \"viewerRoulette\", pool = \"negative\", viewer = \"%user%\" }"
+    ],
+    "name": "viewerRoulette",
+    "params": [
+      {
+        "default": "all",
+        "description": "Filtre du tirage",
+        "name": "pool",
+        "required": false,
+        "type": "string",
+        "values": [
+          "all",
+          "positive",
+          "negative"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Affiche les coordonnees actuelles du joueur",
+    "examples": [
+      "{ type = \"xyz\", viewer = \"%user%\" }"
+    ],
+    "name": "xyz",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Onde de choc qui repousse les zombies dans un rayon vers l'exterieur",
+    "examples": [
+      "{ type = \"zombieBlast\", viewer = \"%user%\" }",
+      "{ type = \"zombieBlast\", outerRadius = 30, viewer = \"%user%\" }",
+      "{ type = \"zombieBlast\", pushDistance = 80, viewer = \"%user%\" }",
+      "{ type = \"zombieBlast\", waveSpeed = 1.5, outerRadius = 30, viewer = \"%user%\" }"
+    ],
+    "name": "zombieBlast",
+    "params": [
+      {
+        "default": "20",
+        "description": "Rayon maximum d'effet",
+        "max": "100",
+        "min": "1",
+        "name": "outerRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0",
+        "description": "Rayon interieur epargne par l'onde",
+        "max": "99",
+        "min": "0",
+        "name": "innerRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Distance de poussee en tuiles",
+        "max": "100",
+        "min": "30",
+        "name": "pushDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0.6",
+        "description": "Vitesse d'expansion de l'onde",
+        "max": "3",
+        "min": "0.2",
+        "name": "waveSpeed",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "SledgehammerDrop",
+        "description": "Son au declenchement",
+        "name": "startSound",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "SledgehammerBreak",
+        "description": "Son a la fin de l'onde",
+        "name": "soundName",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "true",
+        "description": "Sons joues en UI (true) ou dans le monde (false)",
+        "name": "localSound",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Met a terre et gele l'IA des zombies dans un rayon pendant une duree (fenetre de fuite)",
+    "examples": [
+      "{ type = \"zombieFreeze\", viewer = \"%user%\" }",
+      "{ type = \"zombieFreeze\", radius = 25, duration = 20, viewer = \"%user%\" }"
+    ],
+    "name": "zombieFreeze",
+    "params": [
+      {
+        "default": "15",
+        "description": "Rayon d'effet en tuiles",
+        "max": "40",
+        "min": "3",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Duree du gel en secondes (ou \"30s\")",
+        "max": "60",
+        "min": "3",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Rend tous les zombies invisibles a l'ecran du streamer (alpha de rendu a 0) pendant une duree. Ils continuent de le voir et de l'attaquer",
+    "examples": [
+      "{ type = \"zombieHidden\", viewer = \"%user%\" }",
+      "{ type = \"zombieHidden\", duration = 45, viewer = \"%user%\" }"
+    ],
+    "name": "zombieHidden",
+    "params": [
+      {
+        "default": "20",
+        "description": "Duree en secondes (ou \"1min\")",
+        "max": "90",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Systeme unifie de spawn de zombies (remplace les actions deprecees)",
+    "examples": [
+      "{ type = \"zombieSpawn\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 5, zombieType = \"sprinter\", pattern = \"circle\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 20, pattern = \"horde\", attractSound = true, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 10, pattern = \"rain\", interval = 1, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 30, pattern = \"ring\", minRadius = 20, maxRadius = 60, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"tank\", weapon = \"none\", health = 10, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"judge\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 3, zombieType = \"ambusher\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"screamer\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"charger\", viewer = \"%user%\" }"
+    ],
+    "name": "zombieSpawn",
+    "params": [
+      {
+        "default": "1",
+        "description": "Nombre de zombies a faire apparaitre. En pattern rain, le lot est rogne pour que la file globale ne depasse jamais 100 zombies en attente, tous appels confondus",
+        "max": "100",
+        "min": "1",
+        "name": "count",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "generic",
+        "description": "Type de zombie",
+        "name": "zombieType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "random",
+          "generic",
+          "sprinter",
+          "tank",
+          "fastShambler",
+          "crawler",
+          "skeleton",
+          "stripper",
+          "katana",
+          "hockeyPsycho",
+          "police",
+          "military",
+          "fireman",
+          "inmate",
+          "doctor",
+          "nurse",
+          "hunter",
+          "survivor",
+          "biker",
+          "chef",
+          "judge",
+          "horde",
+          "rain",
+          "ambusher",
+          "screamer",
+          "charger"
+        ]
+      },
+      {
+        "default": "circle",
+        "description": "Pattern de spawn",
+        "name": "pattern",
+        "required": false,
+        "type": "string",
+        "values": [
+          "circle",
+          "horde",
+          "ring",
+          "rain",
+          "random",
+          "uniform"
+        ]
+      },
+      {
+        "default": "10",
+        "description": "Rayon principal en tuiles",
+        "max": "50",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "50",
+        "description": "Distance depuis le joueur (pattern horde)",
+        "max": "100",
+        "min": "1",
+        "name": "distance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Rayon minimum (pattern ring)",
+        "name": "minRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Rayon maximum (pattern ring)",
+        "name": "maxRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0",
+        "description": "Intervalle entre spawns en secondes (pattern rain). Les zombies rain tombent au sol et doivent se relever, avec un bruit d'impact entendu du seul joueur",
+        "max": "30",
+        "min": "0",
+        "name": "interval",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Creer un son d'attraction",
+        "name": "attractSound",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "200",
+        "description": "Rayon du son d'attraction",
+        "max": "500",
+        "min": "1",
+        "name": "attractRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "100",
+        "description": "Volume du son d'attraction",
+        "max": "500",
+        "min": "1",
+        "name": "attractVolume",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Appliquer un etat aleatoire",
+        "name": "applyRandomState",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "description": "Son joue au premier spawn (une fois par commande)",
+        "name": "spawnSound",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "true",
+        "description": "Les zombies vont vers le joueur",
+        "name": "pathToPlayer",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "false",
+        "description": "Jouer une animation au spawn",
+        "name": "playAnimation",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "description": "Nom du viewer affiche sur les zombies",
+        "name": "viewer",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "description": "Override le walkType du zombie",
+        "name": "walkType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "sprint1",
+          "sprint2",
+          "sprint3",
+          "sprint4",
+          "sprint5",
+          "slow1",
+          "slow2",
+          "slow3",
+          "none"
+        ]
+      },
+      {
+        "description": "Override l'outfit du zombie (nom PZ ou none)",
+        "name": "outfit",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "description": "Override l'arme du zombie (format Module.Item ou none)",
+        "name": "weapon",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "description": "Override l'etat initial",
+        "name": "spawnState",
+        "required": false,
+        "type": "string",
+        "values": [
+          "standing",
+          "knockedDown",
+          "fakeDead",
+          "crawling",
+          "sitting",
+          "running",
+          "none"
+        ]
+      },
+      {
+        "description": "Sante du zombie (HP)",
+        "max": "100",
+        "min": "0.1",
+        "name": "health",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "description": "Override le type de vitesse",
+        "name": "speedType",
+        "required": false,
+        "type": "number",
+        "values": [
+          "1",
+          "2",
+          "3"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Change la vitesse de deplacement des zombies",
+    "examples": [
+      "{ type = \"zombieSpeedEvent\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpeedEvent\", wt = \"Sprint3\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpeedEvent\", wt = \"Slow1\", radius = 40, viewer = \"%user%\" }"
+    ],
+    "name": "zombieSpeedEvent",
+    "params": [
+      {
+        "default": "Sprint1",
+        "description": "WalkType a appliquer",
+        "name": "wt",
+        "required": false,
+        "type": "string",
+        "values": [
+          "Sprint1",
+          "Sprint2",
+          "Sprint3",
+          "Sprint4",
+          "Sprint5",
+          "1",
+          "2",
+          "3",
+          "Slow1",
+          "Slow2",
+          "Slow3"
+        ]
+      },
+      {
+        "default": "20",
+        "description": "Rayon d'effet en tuiles",
+        "max": "80",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  }
+]
+;
+const REF_TEXTS = {
+  "UI_KAO_SYSTEM_BODYPART_Foot_L": "Pied gauche",
+  "UI_KAO_SYSTEM_BODYPART_Foot_R": "Pied droit",
+  "UI_KAO_SYSTEM_BODYPART_ForeArm_L": "Avant-bras gauche",
+  "UI_KAO_SYSTEM_BODYPART_ForeArm_R": "Avant-bras droit",
+  "UI_KAO_SYSTEM_BODYPART_Groin": "Aine",
+  "UI_KAO_SYSTEM_BODYPART_Hand_L": "Main gauche",
+  "UI_KAO_SYSTEM_BODYPART_Hand_R": "Main droite",
+  "UI_KAO_SYSTEM_BODYPART_Head": "Tête",
+  "UI_KAO_SYSTEM_BODYPART_LowerLeg_L": "Jambe gauche",
+  "UI_KAO_SYSTEM_BODYPART_LowerLeg_R": "Jambe droite",
+  "UI_KAO_SYSTEM_BODYPART_Neck": "Cou",
+  "UI_KAO_SYSTEM_BODYPART_Torso_Lower": "Bas du torse",
+  "UI_KAO_SYSTEM_BODYPART_Torso_Upper": "Haut du torse",
+  "UI_KAO_SYSTEM_BODYPART_UpperArm_L": "Bras gauche",
+  "UI_KAO_SYSTEM_BODYPART_UpperArm_R": "Bras droit",
+  "UI_KAO_SYSTEM_BODYPART_UpperLeg_L": "Cuisse gauche",
+  "UI_KAO_SYSTEM_BODYPART_UpperLeg_R": "Cuisse droite",
+  "UI_KAO_SYSTEM_CONFIG_COL_DECK": "Watch me die!",
+  "UI_KAO_SYSTEM_CONFIG_COL_ENABLED": "Active",
+  "UI_KAO_SYSTEM_CONFIG_COL_ROULETTE": "Roulette",
+  "UI_KAO_SYSTEM_CONFIG_HINT": "Ne filtre que les tirages aleatoires : une action demandee par un viewer part toujours.",
+  "UI_KAO_SYSTEM_CONFIG_SAVE": "Enregistrer",
+  "UI_KAO_SYSTEM_CONFIG_SEARCH": "Rechercher une action",
+  "UI_KAO_SYSTEM_CONFIG_TITLE": "Configuration SIF-Olsann",
+  "UI_KAO_SYSTEM_CREDITS_ACTIONS_SUFFIX": " actions",
+  "UI_KAO_SYSTEM_CREDITS_ACTION_SUFFIX": " action",
+  "UI_KAO_SYSTEM_CREDITS_DONORS": "Donateurs",
+  "UI_KAO_SYSTEM_CREDITS_DONOR_BITS": " bits",
+  "UI_KAO_SYSTEM_CREDITS_DONOR_GIFTS": " offerts",
+  "UI_KAO_SYSTEM_CREDITS_DONOR_MONEY": " dons",
+  "UI_KAO_SYSTEM_CREDITS_DONOR_SUBS": " abos",
+  "UI_KAO_SYSTEM_CREDITS_GROUP_angel": "Les Anges",
+  "UI_KAO_SYSTEM_CREDITS_GROUP_demon": "Les Démons",
+  "UI_KAO_SYSTEM_CREDITS_TEAM": "Équipe",
+  "UI_KAO_SYSTEM_CREDITS_THANKS": "Merci à toutes et à tous !",
+  "UI_KAO_SYSTEM_CREDITS_TITLE": "SIF-Olsann",
+  "UI_KAO_SYSTEM_CREDITS_USER_ChristopheX": "T'es qu'un vieux con aigris.",
+  "UI_KAO_SYSTEM_CREDITS_USER_Craipe": "Coucou Craipe !",
+  "UI_KAO_SYSTEM_CREDITS_USER_Harumate": "Merci de me faire participer à l'event !",
+  "UI_KAO_SYSTEM_CREDITS_USER_Kao": "N'cha, I Just Fucking Do It !!!!",
+  "UI_KAO_SYSTEM_CREDITS_USER_Olsann": "Le meilleur streamer de l'univers ! C'est pour lui que j'ai repris ce mod.",
+  "UI_KAO_SYSTEM_CREDITS_USER_Papynatore": "Merci pour la motivation",
+  "UI_KAO_SYSTEM_CREDITS_USER_YebNFlo": "L'auteur du mod à l'origine de l'intégration, et qui a fournis les scripts de bases et les premières idées d'intégration, sans lui tout ça n'aurais pas été possible.",
+  "UI_KAO_SYSTEM_DEFER_HEAL_NOT_NEEDED": "Joueur en bonne santé",
+  "UI_KAO_SYSTEM_DEFER_NO_ITEMS_IN_HAND": "Pas d'objets en main",
+  "UI_KAO_SYSTEM_DEFER_NO_VEHICLE": "Pas de véhicule",
+  "UI_KAO_SYSTEM_DEFER_PART_UNAVAILABLE": "Pièce indisponible sur le véhicule",
+  "UI_KAO_SYSTEM_DEFER_THANKS": "Merci %s, ça va venir mais pas tout de suite.",
+  "UI_KAO_SYSTEM_DEFER_VEHICLE_STOPPED": "Vehicule a l'arret",
+  "UI_KAO_SYSTEM_EFFECT_ENDS_AT": "fin %%s",
+  "UI_KAO_SYSTEM_EFFECT_PENDING": "en attente",
+  "UI_KAO_SYSTEM_HUD_CLOSE": "x",
+  "UI_KAO_SYSTEM_HUD_CURRENT_DEATHS": "Morts : ",
+  "UI_KAO_SYSTEM_HUD_CURRENT_OBJECTIVES": "Objectifs actuels : ",
+  "UI_KAO_SYSTEM_HUD_CURRENT_SPAWNED": "Zeds envoyés (vie en cours) : ",
+  "UI_KAO_SYSTEM_HUD_CURRENT_SPAWNED_KILLED": "Zeds envoyés tués (vie en cours) : ",
+  "UI_KAO_SYSTEM_HUD_DAY": "Jour ",
+  "UI_KAO_SYSTEM_HUD_DEBUG_DISABLED": "DEBUG : désactivé",
+  "UI_KAO_SYSTEM_HUD_DEBUG_ENABLED": "DEBUG : activé",
+  "UI_KAO_SYSTEM_HUD_DONATION_DONORS": "Donateurs uniques : ",
+  "UI_KAO_SYSTEM_HUD_DONATION_NEXT_MILESTONE": "Prochain palier dans : ",
+  "UI_KAO_SYSTEM_HUD_DONATION_SECTION": "Donations",
+  "UI_KAO_SYSTEM_HUD_DONATION_TOP_DONORS": "Top Donateurs",
+  "UI_KAO_SYSTEM_HUD_DONATION_TOTAL": "Total : ",
+  "UI_KAO_SYSTEM_HUD_ELECTRICITY": "Électricité : ",
+  "UI_KAO_SYSTEM_HUD_GAME_TIME": "Heure ingame : ",
+  "UI_KAO_SYSTEM_HUD_LEADERBOARD_SECTION": "Leaderboard Viewers",
+  "UI_KAO_SYSTEM_HUD_NEXT_RETRY": "Prochain: ",
+  "UI_KAO_SYSTEM_HUD_PENDING_MORE": "autres",
+  "UI_KAO_SYSTEM_HUD_PENDING_SECTION": "Actions en attente",
+  "UI_KAO_SYSTEM_HUD_RECENT_SECTION": "Dernières actions",
+  "UI_KAO_SYSTEM_HUD_RETURNS_IN": "Retour dans ",
+  "UI_KAO_SYSTEM_HUD_SHUTS_IN": "Coupure dans ",
+  "UI_KAO_SYSTEM_HUD_SPAWNED_LEFT": "Zeds envoyés encore en vie : ",
+  "UI_KAO_SYSTEM_HUD_STAGE_BLIZZARD": "Blizzard",
+  "UI_KAO_SYSTEM_HUD_STAGE_CLEARING": "Dégagement",
+  "UI_KAO_SYSTEM_HUD_STAGE_DRIZZLE": "Bruine",
+  "UI_KAO_SYSTEM_HUD_STAGE_HEAVY_PRECIP": "Pluie forte",
+  "UI_KAO_SYSTEM_HUD_STAGE_INTERMEZZO": "Intermezzo",
+  "UI_KAO_SYSTEM_HUD_STAGE_KATEBOB": "Tempête Kate Bob",
+  "UI_KAO_SYSTEM_HUD_STAGE_MODDED": "Modifiée",
+  "UI_KAO_SYSTEM_HUD_STAGE_MODERATE": "Modérée",
+  "UI_KAO_SYSTEM_HUD_STAGE_SHOWERS": "Averses",
+  "UI_KAO_SYSTEM_HUD_STAGE_START": "Début",
+  "UI_KAO_SYSTEM_HUD_STAGE_STORM": "Orage",
+  "UI_KAO_SYSTEM_HUD_STAGE_TROPICAL": "Tempête tropicale",
+  "UI_KAO_SYSTEM_HUD_STAGE_UNKNOWN": "Inconnue",
+  "UI_KAO_SYSTEM_HUD_STATUS_OFFLINE": "Coupé",
+  "UI_KAO_SYSTEM_HUD_STATUS_ONLINE": "Disponible",
+  "UI_KAO_SYSTEM_HUD_TEMPERATURE": "Température extérieure : ",
+  "UI_KAO_SYSTEM_HUD_TEMPERATURE_UNKNOWN": "--°C",
+  "UI_KAO_SYSTEM_HUD_TIME_UNKNOWN": "--:--",
+  "UI_KAO_SYSTEM_HUD_TITLE": "Statistiques KAO",
+  "UI_KAO_SYSTEM_HUD_TOP_NEGATIVE": "Démons (Négatifs)",
+  "UI_KAO_SYSTEM_HUD_TOP_POSITIVE": "Anges (Positifs)",
+  "UI_KAO_SYSTEM_HUD_TOTAL_KILLED": "Zeds tués au total (tous) : ",
+  "UI_KAO_SYSTEM_HUD_TOTAL_SPAWNED": "Zeds envoyés (total) : ",
+  "UI_KAO_SYSTEM_HUD_TOTAL_SPAWNED_KILLED": "Zeds envoyés tués (total) : ",
+  "UI_KAO_SYSTEM_HUD_WATER": "Eau : ",
+  "UI_KAO_SYSTEM_HUD_WEATHER_REMAINING": "Temps restant : ",
+  "UI_KAO_SYSTEM_HUD_WEATHER_STAGE": "Météo : ",
+  "UI_KAO_SYSTEM_HUD_WEATHER_TYPE": "Type de météo : ",
+  "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_BLIZZARD": "Blizzard",
+  "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_PRECIP": "Précipitations",
+  "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_SHOWERS": "Averses",
+  "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_STORM": "Orage",
+  "UI_KAO_SYSTEM_HUD_WEATHER_TYPE_TROPICAL": "Tempête tropicale",
+  "UI_KAO_SYSTEM_ITEM_KEY_TO_VEHICLE": "Clé pour %s",
+  "UI_KAO_SYSTEM_MENU_CONFIG": "Configurer SIF-Olsann",
+  "UI_KAO_SYSTEM_MENU_ENABLE_SLEEP": "Activer capacite de dormir",
+  "UI_KAO_SYSTEM_MENU_HIDE_HUD": "Masquer HUD KAO",
+  "UI_KAO_SYSTEM_MENU_HIDE_IMAGE_PANEL": "Masquer panneau stream",
+  "UI_KAO_SYSTEM_MENU_SAVE_EQUIPMENT": "Sauvegarder l'equipement",
+  "UI_KAO_SYSTEM_MENU_SAVE_EQUIPMENT_PROMPT": "Nom de la sauvegarde :",
+  "UI_KAO_SYSTEM_MENU_SET_MORNING": "Mettre l'heure a 10h",
+  "UI_KAO_SYSTEM_MENU_SHOW_CREDITS": "Afficher les crédits",
+  "UI_KAO_SYSTEM_MENU_SHOW_HUD": "Afficher HUD KAO",
+  "UI_KAO_SYSTEM_MENU_SHOW_IMAGE_PANEL": "Afficher panneau stream",
+  "UI_KAO_SYSTEM_MENU_SLEEP_ENABLED_FEEDBACK": "Tu peux dormir maintenant.",
+  "UI_KAO_SYSTEM_MENU_SOUND_TEST": "Sons du mod",
+  "UI_KAO_SYSTEM_MENU_WORLD_SOUND_HIDE": "Masquer WorldSounds",
+  "UI_KAO_SYSTEM_MENU_WORLD_SOUND_SHOW": "Afficher WorldSounds",
+  "UI_KAO_SYSTEM_MENU_ZPOP_TRACK_START": "Suivre joueur (ZPop)",
+  "UI_KAO_SYSTEM_MENU_ZPOP_TRACK_STOP": "Stop suivi joueur (ZPop)",
+  "UI_KAO_SYSTEM_MSG_BLOCKED_BY_MODE": "Action retardée : %s est actif",
+  "UI_KAO_SYSTEM_MSG_HOUSE_EVENT_ALREADY_RUNNING": "Un événement est déjà en cours...",
+  "UI_KAO_SYSTEM_OPTIONS_CATEGORY_environment": "Actions Environnement",
+  "UI_KAO_SYSTEM_OPTIONS_CATEGORY_events": "Événements",
+  "UI_KAO_SYSTEM_OPTIONS_CATEGORY_fun": "Actions Fun",
+  "UI_KAO_SYSTEM_OPTIONS_CATEGORY_player": "Actions Joueur",
+  "UI_KAO_SYSTEM_OPTIONS_CATEGORY_vehicle": "Actions Véhicules",
+  "UI_KAO_SYSTEM_OPTIONS_CATEGORY_zombies": "Actions Zombies",
+  "UI_KAO_SYSTEM_OPTIONS_DEBUG_TOOLS": "Afficher les outils de debug",
+  "UI_KAO_SYSTEM_OPTIONS_DEBUG_TOOLS_TT": "Ajoute au menu contextuel les utilitaires de test : HUD KAO, déclenchement manuel des actions, sauvegarde d'équipement, sommeil forcé, heure du matin, suivi de population, cercles de bruit. Masqués par défaut pour ne pas encombrer le clic droit en stream.",
+  "UI_KAO_SYSTEM_OPTIONS_DESC_ACTIONS": "Activer ou désactiver chaque action. Une action désactivée ignore silencieusement ses événements.",
+  "UI_KAO_SYSTEM_OPTIONS_DESC_HARDCORE": "Déclenche une action négative aléatoire à intervalle régulier",
+  "UI_KAO_SYSTEM_OPTIONS_DESC_TOTALS": "Bits, abonnements et dons cumulés sur toutes les parties",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_ENERGY": "Energie du feu",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_ENERGY_TT": "Energie de propagation du feu (plus bas = moins de propagation)",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_LIFE": "Duree du feu",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_LIFE_TT": "Duree de vie du feu par defaut",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_MAX_LIFE": "Duree max du feu",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_MAX_LIFE_TT": "Plafond de duree de vie du feu",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_MIN_LIFE": "Duree min du feu",
+  "UI_KAO_SYSTEM_OPTIONS_FIRE_MIN_LIFE_TT": "Plancher de duree de vie du feu",
+  "UI_KAO_SYSTEM_OPTIONS_HARDCORE_ENABLED": "Activer Watch me die!",
+  "UI_KAO_SYSTEM_OPTIONS_HARDCORE_ENABLED_TT": "Déclenche périodiquement des actions négatives aléatoires",
+  "UI_KAO_SYSTEM_OPTIONS_HARDCORE_INTERVAL": "Intervalle (minutes)",
+  "UI_KAO_SYSTEM_OPTIONS_HARDCORE_INTERVAL_TT": "Temps entre deux déclenchements (minutes réelles)",
+  "UI_KAO_SYSTEM_OPTIONS_HUD_ENABLED": "Afficher le HUD des effets",
+  "UI_KAO_SYSTEM_OPTIONS_HUD_ENABLED_TT": "Affiche les effets actifs sous forme de barres de progression",
+  "UI_KAO_SYSTEM_OPTIONS_HUD_SCALE": "Echelle du HUD (pourcentage)",
+  "UI_KAO_SYSTEM_OPTIONS_HUD_SCALE_TT": "Taille des barres de progression (100 = defaut)",
+  "UI_KAO_SYSTEM_OPTIONS_RESET_TOTALS": "Effacer les totaux cumulés",
+  "UI_KAO_SYSTEM_OPTIONS_RESET_TOTALS_TT": "Cocher puis valider remet bits, abonnements et dons à zéro. Irréversible.",
+  "UI_KAO_SYSTEM_OPTIONS_SECTION_ACTIONS": "Actions",
+  "UI_KAO_SYSTEM_OPTIONS_SECTION_DEBUG": "Outils de développement",
+  "UI_KAO_SYSTEM_OPTIONS_SECTION_FIRE": "Systeme de feu",
+  "UI_KAO_SYSTEM_OPTIONS_SECTION_HARDCORE": "Watch me die!",
+  "UI_KAO_SYSTEM_OPTIONS_SECTION_HUD": "HUD des effets",
+  "UI_KAO_SYSTEM_OPTIONS_SECTION_SOUND": "Sons du mod",
+  "UI_KAO_SYSTEM_OPTIONS_SECTION_TOTALS": "Dons cumulés",
+  "UI_KAO_SYSTEM_OPTIONS_SOUND_TEST_MENU": "Menu de test des sons",
+  "UI_KAO_SYSTEM_OPTIONS_SOUND_TEST_MENU_TT": "Ajoute une entrée « Sons du mod » au menu contextuel (clic droit) pour écouter chaque son, groupé par dossier. Pratique pour calibrer le volume ci-dessus.",
+  "UI_KAO_SYSTEM_OPTIONS_SOUND_VOLUME": "Volume des sons ajoutés par le mod (pourcentage)",
+  "UI_KAO_SYSTEM_OPTIONS_SOUND_VOLUME_TT": "Ne concerne que les sons joués par le mod : hélicoptère, musiques de superMario et discoInferno, alarmes, répliques. Les sons du jeu déclenchés par une action (vitres brisées, portes, moteurs, zombies) gardent le volume du jeu.",
+  "UI_KAO_SYSTEM_OPTIONS_TITLE": "SIF-Olsann",
+  "UI_KAO_SYSTEM_PANEL_ZEDS_KILLED": "Tués ",
+  "UI_KAO_SYSTEM_PANEL_ZEDS_REMAINING": "Restants ",
+  "UI_KAO_SYSTEM_PANEL_ZEDS_SENT": "Envoyés ",
+  "UI_KAO_SYSTEM_PANEL_ZEDS_TOTAL_KILLED": "Zeds tués au total : ",
+  "UI_KAO_SYSTEM_SOUNDBROWSER_ALL_FOLDERS": "Tous les dossiers",
+  "UI_KAO_SYSTEM_SOUNDBROWSER_REPLAY": "Rejouer la sélection",
+  "UI_KAO_SYSTEM_SOUNDBROWSER_TITLE": "Sons du mod",
+  "UI_KAO_alarm_EFFECT": "Alarme",
+  "UI_KAO_alarm_MSG_NO_INDOOR_AREAS": "Je devrais me méfier des alarmes...",
+  "UI_KAO_alarm_MSG_TRIGGERED": "Alarme declenchee !",
+  "UI_KAO_alarm_NAME": "Alarme",
+  "UI_KAO_alarm_SAY_01": "Alarme !",
+  "UI_KAO_amnesia_EFFECT": "Amnésie",
+  "UI_KAO_amnesia_MSG_RESTORED": "J'me sens moins con maintenant !",
+  "UI_KAO_amnesia_NAME": "Amnésie",
+  "UI_KAO_amnesia_SAY_01": "Attends... je faisais quoi déjà ?",
+  "UI_KAO_amnesia_SAY_02": "C'est quoi ce truc dans ma main ?",
+  "UI_KAO_barricadeEvent_NAME": "Barricade",
+  "UI_KAO_barricadeEvent_SAY_01": "Les planches tiennent... pour l'instant.",
+  "UI_KAO_barricadeEvent_SAY_02": "Barricades en place, on va voir combien de temps ça dure.",
+  "UI_KAO_barricadeEvent_SAY_03": "Ce tombeau sera votre tombeau.",
+  "UI_KAO_butterFingers_MSG_EMPTY": "Heureusement, j'avais les mains vides !",
+  "UI_KAO_butterFingers_NAME": "Mains de beurre",
+  "UI_KAO_butterFingers_SAY_01": "Oups... ça glisse !",
+  "UI_KAO_carAlarm_MSG": "Encore une alarme de voiture...",
+  "UI_KAO_carAlarm_SAY_01": "",
+  "UI_KAO_carEvent_MSG": "Ma bagnole !",
+  "UI_KAO_carEvent_MSG_BATTERY_BREAK": "Battery exploded!",
+  "UI_KAO_carEvent_MSG_CRASH_01": "AAAH ! C'est quoi ce bordel ?!",
+  "UI_KAO_carEvent_MSG_CRASH_02": "Ma bagnole ! Elle est foutue !",
+  "UI_KAO_carEvent_MSG_ENGINE_BREAK": "Boum, Quand notre coeur fait Boum, Tout avec lui dit Boum, Et c'est l'amour qui s'éveille.",
+  "UI_KAO_carEvent_MSG_ENGINE_FIX": "It's a kind of magic",
+  "UI_KAO_carEvent_MSG_GAS_OUT_01": "Il va falloir finir à pied...",
+  "UI_KAO_carEvent_MSG_GAS_REFILL": "It's a kind of magic",
+  "UI_KAO_carEvent_MSG_KEY_FAIL": "Failed to get a key.",
+  "UI_KAO_carEvent_MSG_KEY_OK": "Une clé de voiture ?!",
+  "UI_KAO_carEvent_MSG_NO_CAR": "Aucune voiture trouvée pour appliquer l'évènement !",
+  "UI_KAO_carEvent_MSG_REPAIR": "Véhicule remis à neuf ! Merci le garage !",
+  "UI_KAO_carEvent_MSG_STRIP_ALL_01": "Quand c'est pas moi qui finis à poil, c'est ma voiture qui se fait dépouiller !",
+  "UI_KAO_carEvent_MSG_TIRE_POP_01": "j'aurais du vérifier la pression des pneus...",
+  "UI_KAO_carEvent_MSG_TIRE_REPAIR_01": "It's a kind of magic",
+  "UI_KAO_carEvent_MSG_WINDOW_CLOSE": "C'est pas une bone idée de laisser la fenêtre ouverte en fait",
+  "UI_KAO_carEvent_MSG_WINDOW_MISSING": "Vitre conducteur introuvable.",
+  "UI_KAO_carEvent_MSG_WINDOW_OPEN": "Il fait chaud, ouvrons la fenêtre !",
+  "UI_KAO_carEvent_NAME": "Événement véhicule",
+  "UI_KAO_carMageddon_EFFECT": "Carmageddon",
+  "UI_KAO_carMageddon_MSG": "C'est l'apocalypse automobile !",
+  "UI_KAO_carMageddon_NAME": "Car-mageddon",
+  "UI_KAO_carMageddon_SAY_01": "C'est l'apocalypse !",
+  "UI_KAO_carMageddon_SAY_05": "Ça carambole plus que le périph un vendredi soir !",
+  "UI_KAO_carMageddon_SAY_06": "Il pleut des bagnoles, sortez couverts !",
+  "UI_KAO_circleStripperZeds_MSG": "Des zombies en tenue legere... charmant.",
+  "UI_KAO_circleStripperZeds_SAY_01": "Des zombies stripteaseuses ? C'est Gigi qui va être jalouse !",
+  "UI_KAO_circleStripperZeds_SAY_02": "J'espère qu'elles dansent bien !",
+  "UI_KAO_circleTest_SAY_01": "Test en cours...",
+  "UI_KAO_coffee_SAY_01": "Un petit café et ça repart !",
+  "UI_KAO_companion_EFFECT": "Garde du corps",
+  "UI_KAO_companion_MSG_GONE": "Bon bah voilà, je n'ai plus qu'a me trouver un ballon et le nommer wilson...",
+  "UI_KAO_companion_MSG_WOUNDED": "Je crois que mon garde du corps est blessé...",
+  "UI_KAO_companion_NAME": "Garde du corps",
+  "UI_KAO_companion_SAY_01": "Tu as tué mes hommes, alors tu vas bosser pour moi. Tiens, prend ce flingue.",
+  "UI_KAO_costume_diehard_MSG_BACK_TO_REALITY": "Bon... retour a la realite.",
+  "UI_KAO_costume_rambo_MSG_MISSION_COMPLETE": "Mission Accomplie",
+  "UI_KAO_costume_rambo_SAY_01": "Je suis ton pire cauchemar.",
+  "UI_KAO_costume_rambo_SAY_02": "En ville, tu fais la loi. Ici, c'est moi. Alors fais pas chier. Fais pas chier ou je te ferai une guerre comme t'en as jamais vue.",
+  "UI_KAO_costume_rambo_SAY_03": "Je ne viens pas sauver Rambo des Zombies, je viens sauver les Zombies de Rambo !",
+  "UI_KAO_costume_rambo_SAY_04": "Mais pour qui prenez vous cet homme ? Pour Dieu ? - Non, Dieu aurait pitié, pas Rambo.",
+  "UI_KAO_diehard_MSG_BACK_TO_REALITY_01": "Ça va ? T'es couvert de sang ! - Oui, c'est pas le mien.",
+  "UI_KAO_diehard_MSG_BACK_TO_REALITY_02": "Tu diras bonjour à ton frère. Bon voyage espèce d'enfoiré !",
+  "UI_KAO_diehard_SAY_01": "Yippee Ki-Yay, motherfucker",
+  "UI_KAO_diehard_SAY_02": "Tu composes le 911 et tu dis aux policiers qu'ils se dépêchent d'arriver, il va y avoir un meurtre dans la rue.",
+  "UI_KAO_discoInferno_EFFECT": "Disco",
+  "UI_KAO_discoInferno_MSG_OVER": "La fête est finie :(",
+  "UI_KAO_discoInferno_NAME": "Disco Inferno",
+  "UI_KAO_discoInferno_SAY_01": "Ce soir, chez Boris: événement! C'est Soirée disco!",
+  "UI_KAO_discoInferno_lines_SAY_01": "Ils m'entraînent au bout de la nuit, Les démons de minuit ! M'entraînent jusqu'à l'insomnie, Les fantômes de l'ennui !",
+  "UI_KAO_discoInferno_lines_SAY_02": "Terre brûlée au vent, Des landes de pierres...",
+  "UI_KAO_discoInferno_lines_SAY_03": "Je te survivrai d'un amour vivant, Je te survivrai dans des yeux d'enfants, Je te survivrai comme un revenant, Je te survivrai !",
+  "UI_KAO_discoInferno_lines_SAY_04": " Il en faut peu pour être heureux ! Vraiment très peu pour être heureux !",
+  "UI_KAO_discoInferno_lines_SAY_05": "C'est la danse des canards, Qui en sortant de la mare, Se secouent le bas des reins, Et font coin-coin ",
+  "UI_KAO_discoInferno_lines_SAY_06": "Ça plane pour moi moi moi moi !",
+  "UI_KAO_discoInferno_lines_SAY_07": "Haha ha ha ha Stayin' aliiiive, stayin' aliiiive !",
+  "UI_KAO_donation_MSG": "Don recu : merci %s !",
+  "UI_KAO_donation_MSG_CONFIG_ERROR": "Erreur de configuration : don recu sans montant valide. Parametres recus : %s",
+  "UI_KAO_donation_MSG_SPAWN": "Les dons invoquent %d zombies !",
+  "UI_KAO_donation_NAME": "Donation",
+  "UI_KAO_drunk_EFFECT": "Bourre",
+  "UI_KAO_drunk_NAME": "Ivresse",
+  "UI_KAO_drunk_SAY_01": "L'alcool est notre pire ennemi, fuir serait lâche !",
+  "UI_KAO_drunk_SAY_02": "L'alcool permet de rendre l'eau potable.",
+  "UI_KAO_drunk_SAY_03": "L'alcool purifie tout, comme le feu.",
+  "UI_KAO_drunk_SAY_04": "L'abus d'alcool doit se faire avec modération.",
+  "UI_KAO_drunk_SAY_05": "Il faut faire très attention aux femmes. C'est encore plus traître que l'alcool.",
+  "UI_KAO_drunk_SAY_06": "La première composante de la personnalité humaine soluble dans l'alcool, c'est la dignité.",
+  "UI_KAO_drunk_SAY_07": "La chance s'envole, l'esprit s'décolle, mais il nous reste la picole.",
+  "UI_KAO_drunk_SAY_08": "L'homme est jugé à la quantité d'alcool qu'il est capable de boire.",
+  "UI_KAO_exampleModule_MSG_PARAMS": "Foo: %s, Bar: %s",
+  "UI_KAO_exampleModule_SAY_01": "Phrase 1",
+  "UI_KAO_exampleModule_SAY_02": "Phrase 2",
+  "UI_KAO_explodeWindow_MSG": "Les fenêtres ont explosé !",
+  "UI_KAO_explodeWindow_NAME": "Exploser les fenêtres",
+  "UI_KAO_explodeWindow_SAY_01": "La fenêtre ouverte laisse entrer le vent... et les ennuis.",
+  "UI_KAO_explodeWindow_SAY_02": "La lumière entre par la fenêtre, mais parfois, c'est le chaos qui en profite.",
+  "UI_KAO_explodeWindow_SAY_03": "Ouvrir une fenêtre, c'est inviter le monde à entrer... même quand il tape à la porte avec un marteau.",
+  "UI_KAO_extinguishFire_NAME": "Éteindre le feu",
+  "UI_KAO_extinguishFire_SAY_01": "Quelqu'un a appele les pompiers ?",
+  "UI_KAO_extinguishFire_SAY_02": "Le feu est maitrise !",
+  "UI_KAO_godMode_EFFECT": "Mode Dieu",
+  "UI_KAO_godMode_MSG_DISABLED": "Mode Dieu désactivé!",
+  "UI_KAO_godMode_MSG_ENABLED": "Gode Mode activé ! (Mais cette fois, c'est pas un bug !)",
+  "UI_KAO_godMode_NAME": "Mode Dieu",
+  "UI_KAO_godMode_SAY_01": "Je me sens... invincible!",
+  "UI_KAO_godMode_SAY_02": "Rien ne peut m'arrêter maintenant!",
+  "UI_KAO_godMode_SAY_03": "Je suis intouchable!",
+  "UI_KAO_godMode_SAY_04": "Le pouvoir coule en moi!",
+  "UI_KAO_heal_NAME": "Soin",
+  "UI_KAO_heal_SAY_01": "Médiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiic",
+  "UI_KAO_heal_SAY_02": "Docteur Maboul approuve cette guérison.",
+  "UI_KAO_heal_SAY_03": "Remis à neuf ! C'est pas faux.",
+  "UI_KAO_helicopter_MSG": "Un hélicoptère ! Ça ne va pas être discret...",
+  "UI_KAO_helicopter_NAME": "Hélicoptère",
+  "UI_KAO_helicopter_SAY_01": "Supercopter tin tin tin tin !",
+  "UI_KAO_helicopter_SAY_02": "J'entends les Walkyries... c'est mauvais signe.",
+  "UI_KAO_helicopter_SAY_03": "Supercopter ou pas, planque-toi.",
+  "UI_KAO_itemCondition_NAME": "Condition des objets",
+  "UI_KAO_itemCondition_full_SAY_01": "Armes réparées",
+  "UI_KAO_itemCondition_zero_SAY_01": "Oups, c'est cassé...",
+  "UI_KAO_itemSpawn_NAME": "Spawn d'objet",
+  "UI_KAO_item_MSG_SPAWN_DEFAULT": "It's dangerous to go alone! Take this",
+  "UI_KAO_item_MSG_SPAWN_WITH_ITEM": "%s (%s)",
+  "UI_KAO_item_spawn_SAY_01": "It's dangerous to go alone! Take this",
+  "UI_KAO_johnWick_MSG_BACK_TO_REALITY": "Ceux qui s'accrochent à la mort vivent.",
+  "UI_KAO_johnWick_SAY_01": "C'était pas qu'un petit chien.",
+  "UI_KAO_jumpscare_NAME": "Jumpscare",
+  "UI_KAO_jumpscare_SAY_01": "C'était quoi ça ?!",
+  "UI_KAO_jumpscare_SAY_02": "Mon coeur a failli s'arreter !",
+  "UI_KAO_jumpscare_SAY_03": "J'ai cru voir quelque chose...",
+  "UI_KAO_jumpscare_SAY_04": "Non non non non non !",
+  "UI_KAO_jumpscare_SAY_05": "Je vais avoir des cauchemars...",
+  "UI_KAO_kentuckyUtilities_MSG_OFF": "Utilitaires coupés (%s h)",
+  "UI_KAO_kentuckyUtilities_MSG_ON": "Utilitaires activés (%s h)",
+  "UI_KAO_kentuckyUtilities_NAME": "Eau & électricité",
+  "UI_KAO_kentuckyUtilities_off_SAY_01": "Quelqu'un a oublié de payer la facture...",
+  "UI_KAO_kentuckyUtilities_on_SAY_01": "Et Kao Dit : Que la lumière soit ! et la lumière fut !",
+  "UI_KAO_killReward_EFFECT": "Olsann",
+  "UI_KAO_killReward_MSG": "Tous les zombies viewers sont morts !",
+  "UI_KAO_maximizeLevels_EFFECT": "Max Levels",
+  "UI_KAO_maximizeLevels_MSG": "Niveaux au maximum !",
+  "UI_KAO_maximizeLevels_NAME": "Niveaux Max",
+  "UI_KAO_maximizeLevels_SAY_01": "La force d'un dieu ne se mesure pas à ses fidèles, mais à l'absence de rivaux capables de se dresser contre lui.",
+  "UI_KAO_maximizeLevels_SYSTEM_TIMER": "MaxLevels",
+  "UI_KAO_maximizeLevels_restore_SAY_01": "C'est donc ainsi ? Tu me dépouilles de mes pouvoirs ? Exactement. Ta quête s'arrête ici avant même d'avoir commencé.",
+  "UI_KAO_migrationControl_EFFECT": "Migration",
+  "UI_KAO_migrationControl_MSG": "Pourquoi est-ce qu'il viennent tous vers moi ?!",
+  "UI_KAO_migrationControl_NAME": "Contrôle de migration",
+  "UI_KAO_migrationControl_SAY_01": "Ils bougent... pas dans la bonne direction.",
+  "UI_KAO_migrationControl_SAY_02": "Les zombies changent de cap...",
+  "UI_KAO_moveTo_MSG": "Teleportation en cours...",
+  "UI_KAO_moveTo_NAME": "Téléportation (lieu)",
+  "UI_KAO_nightVision_EFFECT": "Vision nocturne",
+  "UI_KAO_nightVision_MSG_OFF": "Retour dans le noir complet.",
+  "UI_KAO_nightVision_SAY_01": "Je suis Sam Fisher",
+  "UI_KAO_nightmare_EFFECT": "Cauchemar",
+  "UI_KAO_nightmare_NAME": "Cauchemar",
+  "UI_KAO_nightmare_SAY_01": "Je ne dors plus... je cauchemarde.",
+  "UI_KAO_nightmare_SAY_02": "Les tenebres m'entourent...",
+  "UI_KAO_nightmare_SAY_03": "C'est quoi ce cauchemar ?!",
+  "UI_KAO_openDoor_MSG": "Des portes s'ouvrent toutes seules...",
+  "UI_KAO_openDoor_MSG_NO_CLOSED_DOORS": "Aucune porte fermée trouvée dans un rayon de %s !",
+  "UI_KAO_openDoor_NAME": "Ouvrir les portes",
+  "UI_KAO_openDoor_SAY_01": "Ouvrir une porte, c'est parfois inviter le danger à dîner.",
+  "UI_KAO_openDoor_SAY_02": "Toute porte qui s'ouvre peut cacher un courant d'air... ou un courant d'ennuis.",
+  "UI_KAO_openDoor_SAY_03": "Derrière chaque porte, il y a une surprise. Parfois, c'est un zed.",
+  "UI_KAO_panicAttack_EFFECT": "Panique",
+  "UI_KAO_panicAttack_MSG_OVER": "Ouf... ça va mieux.",
+  "UI_KAO_panicAttack_NAME": "Crise de panique",
+  "UI_KAO_panicAttack_SAY_01": "Mon coeur va exploser !",
+  "UI_KAO_panicAttack_SAY_02": "Ils sont partout ! PARTOUT !",
+  "UI_KAO_panicAttack_SAY_03": "Respire... respire... RESPIRE !",
+  "UI_KAO_paranoia_SAY_01": "C'était quoi ce bruit ?!",
+  "UI_KAO_paranoia_SAY_02": "Il y a quelqu'un ?...",
+  "UI_KAO_phoenix_EFFECT": "Phénix",
+  "UI_KAO_phoenix_MSG_TRIGGER": "Ils auraient du faire pareil avec Aerith, ça aurait été plus utile.",
+  "UI_KAO_phoenix_SAY_01": "Phénix: Beau nom pour une compagnie d'assurances contre l'incendie.",
+  "UI_KAO_phoenix_SAY_02": "Sympa ce petit champignon vert, ça me rappelle mon enfance.",
+  "UI_KAO_pinata_MSG_BURST": "Elle a explose !",
+  "UI_KAO_pinata_NAME": "Piñata",
+  "UI_KAO_pinata_SAY_01": "Une piñata vivante ?",
+  "UI_KAO_playerCircleTest_MSG_ACTIVATED": "Circle active: rayon=%.1f tiles, duree=%ds, effet=%s",
+  "UI_KAO_playerCircleTest_NAME": "Cercle de test (debug)",
+  "UI_KAO_playerGunner_MSG_END": "Je ne suis pas un héros, jamais je ne l'ai été, jamais je ne le serai.",
+  "UI_KAO_playerGunner_MSG_START": "Armé et dangereux.",
+  "UI_KAO_playerGunner_NAME": "Mode Gunner",
+  "UI_KAO_playerGunner_SAY_01": "Du rhum, des flingues et des zeds nom de dieu ! Que l'diable nous emporte, on n'a rien trouvé d'mieux",
+  "UI_KAO_playerGunner_halveTime_NAME": "Gunner : mi-temps",
+  "UI_KAO_playerGunner_stop_NAME": "Gunner : stop",
+  "UI_KAO_playerHidden_EFFECT": "Où est Charlie ?",
+  "UI_KAO_playerHidden_MSG_END": "Me revoilà !",
+  "UI_KAO_playerHidden_SAY_01": "Où est Charlie ?",
+  "UI_KAO_playerHidden_SAY_02": "Marco !... Polo ?",
+  "UI_KAO_playerHidden_SAY_03": "Mon personnage est parti sans laisser d'adresse.",
+  "UI_KAO_playerInvisibleToZombie_EFFECT": "Invisible aux zeds",
+  "UI_KAO_playerInvisibleToZombie_MSG_DISABLED": "Invisibilité désactivée!",
+  "UI_KAO_playerInvisibleToZombie_NAME": "Invisibilité aux zombies",
+  "UI_KAO_playerInvisibleToZombie_SAY_01": "Ils ne peuvent plus me voir!",
+  "UI_KAO_playerInvisibleToZombie_SAY_02": "Je me fonds dans les ombres...",
+  "UI_KAO_playerTchiTchi_EFFECT": "tchitchi",
+  "UI_KAO_playerTchiTchi_MSG": "La mort ou tchitchi ?",
+  "UI_KAO_playerTchiTchi_NAME": "TchiTchi",
+  "UI_KAO_playerTrait_MSG_ADD": "Nouveau trait acquis.",
+  "UI_KAO_playerTrait_MSG_ALREADY_HAS": "J'ai déjà ce trait : %s",
+  "UI_KAO_playerTrait_MSG_GAINED": "Gagné : %s",
+  "UI_KAO_playerTrait_MSG_LOST": "Perdu : %s",
+  "UI_KAO_playerTrait_MSG_NONE_AVAILABLE": "Aucun trait disponible...",
+  "UI_KAO_playerTrait_MSG_NOT_OWNED": "Je n'ai pas ce trait : %s",
+  "UI_KAO_playerTrait_MSG_REMOVE": "Trait perdu.",
+  "UI_KAO_playerTrait_MSG_RESULT_WITH_TRAIT": "%s [%s]",
+  "UI_KAO_playerTrait_NAME": "Trait de caractère",
+  "UI_KAO_playerTrait_add_negative_SAY_01": "Certaines choses arrivent... et on continue d'avancer.",
+  "UI_KAO_playerTrait_add_positive_SAY_01": "Ha enfin un truc utile !",
+  "UI_KAO_playerTrait_remove_negative_SAY_01": "Une saloperie de moins, c'est toujours ça de pris !",
+  "UI_KAO_playerTrait_remove_positive_SAY_01": "ça rentre par une oreille et ça ressort par l'autre !",
+  "UI_KAO_playerWakeup_MSG": "Debout la-dedans !",
+  "UI_KAO_playerWakeup_NAME": "Réveil",
+  "UI_KAO_playerWakeup_SAY_01": "Wake Uuuuuuuuuuuuuuuuuuuuup !!!",
+  "UI_KAO_randomInjury_MSG": "Aïe ! Ça fait mal !",
+  "UI_KAO_randomInjury_MSG_DEFAULT": "Aïe !",
+  "UI_KAO_randomInjury_MSG_WITH_PART": "%s (%s)",
+  "UI_KAO_randomInjury_NAME": "Blessure aléatoire",
+  "UI_KAO_randomInjury_bleeding_SAY_01": "Une coupure nette, une artère ouverte !",
+  "UI_KAO_randomInjury_bullet_SAY_01": "J'ai beau être matinal, j'ai mal...",
+  "UI_KAO_randomInjury_bullet_SAY_02": "C'est ça Snake. Fais moi sentir... fais moi sentir vivant !",
+  "UI_KAO_randomInjury_burn_SAY_01": "C'est le plus grand moment de ta vie mec ! Et tu t'en évades !",
+  "UI_KAO_randomInjury_burn_SAY_02": "J'ai survécu parce que le feu à l'intérieur de moi brûlait plus fort que le feu autour de moi.",
+  "UI_KAO_randomInjury_cut_SAY_01": "Les Lames du Chaos ont été forgées dans les tréfonds de l'enfer. Elles ne coupent pas seulement la chair, elles la consument.",
+  "UI_KAO_randomInjury_deepWound_SAY_01": " Une blessure profonde n'est pas faite pour mettre quelqu'un à terre, elle est faite pour vous faire perdre votre denrée la plus précieuse : le temps. ",
+  "UI_KAO_randomInjury_fracture_SAY_01": "Haaaa ! Je me suis cassé la jambe ! Pourquoi ça n'arrive qu'à moi ?! - Parce que t'es un crétin !",
+  "UI_KAO_randomInjury_scratch_SAY_01": "J'ai pas le temps de saigner.",
+  "UI_KAO_ratExplosion_NAME": "Explosion de rats",
+  "UI_KAO_ratExplosion_SAY_01": "Il y a toujours une petite lumière dans les ténèbres...",
+  "UI_KAO_reanimateCorpses_MSG": "Les morts se relevent... encore.",
+  "UI_KAO_reanimateCorpses_NAME": "Réanimer les cadavres",
+  "UI_KAO_reanimateCorpses_SAY_01": "Mais... ils étaient morts !",
+  "UI_KAO_reanimateCorpses_SAY_02": "Non non non, restez au sol !",
+  "UI_KAO_resetData_MSG_DONE": "Données KAO remises à zéro !",
+  "UI_KAO_resetData_NAME": "Reset des données",
+  "UI_KAO_ringOfFire_MSG": "Un cercle de feu apparaît...",
+  "UI_KAO_ringOfFire_NAME": "Cercle de feu",
+  "UI_KAO_ringOfFire_SAY_01": "J'aime l'odeur du napalm au petit matin",
+  "UI_KAO_ringOfFire_SAY_02": "Le feu ça brûle, et l'eau ça mouille !",
+  "UI_KAO_savePos_MSG": "Position sauvegardee.",
+  "UI_KAO_savePos_MSG_SAVED": "Position sauvegardée : x=%.0f, y=%.0f, z=%.0f",
+  "UI_KAO_savePos_NAME": "Sauvegarder la position",
+  "UI_KAO_setTime_EFFECT": "Changement d'heure",
+  "UI_KAO_setTime_MSG": "L'heure change...",
+  "UI_KAO_setTime_NAME": "Changer l'heure",
+  "UI_KAO_setTime_SAY_01": "Il va faire tout noir",
+  "UI_KAO_setTime_SAY_02": "As-tu jamais dansé avec le diable au clair de lune ?",
+  "UI_KAO_setTime_custom_SAY_01": "L'heure change... le destin aussi.",
+  "UI_KAO_setTime_restored_SAY_01": "L'horloge reprend ses droits.",
+  "UI_KAO_setTime_restored_SAY_02": "Fin de la parenthèse, on remet les pendules à l'heure.",
+  "UI_KAO_setWeather_MSG": "Météo: %s",
+  "UI_KAO_setWeather_NAME": "Changer la météo",
+  "UI_KAO_setWeather_blizzard_EFFECT": "Blizzard",
+  "UI_KAO_setWeather_blizzard_SAY_01": "Winter is coming, et c'est pas Ophélie",
+  "UI_KAO_setWeather_blizzard_SAY_02": "Qu'est-ce que c'est que ce pays?... Il fait au moins... -8.000",
+  "UI_KAO_setWeather_default_SAY_01": "Les temps changent !",
+  "UI_KAO_setWeather_rain_EFFECT": "Pluie",
+  "UI_KAO_setWeather_rain_SAY_01": "it's raining men ! hallelujah !",
+  "UI_KAO_setWeather_stop_SAY_01": "Le soleil revient",
+  "UI_KAO_setWeather_storm_EFFECT": "Orage",
+  "UI_KAO_setWeather_storm_SAY_01": "Song of Storms",
+  "UI_KAO_setWeather_tropical_EFFECT": "Canicule",
+  "UI_KAO_setWeather_tropical_SAY_01": "Chaud, humide et dangereux... je vais arreter cette blague ici.",
+  "UI_KAO_shout_MSG": "AAAAAH !",
+  "UI_KAO_shout_NAME": "Crier",
+  "UI_KAO_shout_SAY_01": "",
+  "UI_KAO_sick_EFFECT": "Rhume",
+  "UI_KAO_sick_MSG": "Je ne me sens pas bien...",
+  "UI_KAO_sick_NAME": "Maladie",
+  "UI_KAO_sick_SAY_01": "",
+  "UI_KAO_sick_SYSTEM_TIMER": "Sick",
+  "UI_KAO_soundEvent_MSG": "C'est pas super rassurant",
+  "UI_KAO_soundEvent_NAME": "Événement sonore",
+  "UI_KAO_soundEvent_SAY_01": "Qu'est-ce que c'est que ce bruit ?",
+  "UI_KAO_sounds_NAME": "Sons",
+  "UI_KAO_spawnCar_MSG": "",
+  "UI_KAO_spawnCar_MSG_KEY_ADDED": "",
+  "UI_KAO_spawnCar_NAME": "Spawn véhicule",
+  "UI_KAO_spawnCar_SAY_01": "Gentlement, Start yours Engines !!",
+  "UI_KAO_spawnHorde_MSG": "Une horde approche !",
+  "UI_KAO_spawnHorde_SAY_01": "C'est quoi ce bruit ?!",
+  "UI_KAO_spawnSprinters_MSG": "Des sprinters ! Cours !",
+  "UI_KAO_spawnSprinters_SAY_01": "Ils courent vite ceux là",
+  "UI_KAO_spawnZombiesAtRadius_MSG": "Zombies ?",
+  "UI_KAO_spawnZombiesAtRadius_SAY_01": "J'ai un mauvais pressentiment...",
+  "UI_KAO_spawnZombiesAtRadius_SAY_02": "Quand il n'y a plus de place en enfer, les morts reviennent sur terre.",
+  "UI_KAO_spawnZombiesAtRadius_SAY_03": "Dieu a un sens de l'humour qui m'échappe.",
+  "UI_KAO_spawnZombiesAtRadius_SAY_04": "Dans cette vie, soit tu tues ou tu meurs... soit tu meurs et tu tues.",
+  "UI_KAO_startEvent_NAME": "Événement de maison",
+  "UI_KAO_startEvent_SAY_01": "Quelque chose se prépare...",
+  "UI_KAO_startEvent_SAY_02": "Un evenement est en cours !",
+  "UI_KAO_stripPlayer_NAME": "Déshabiller",
+  "UI_KAO_stripPlayer_SAY_01": "Pourquoi je suis à poil ?!",
+  "UI_KAO_stripPlayer_SAY_02": "Hé ! Qui m'a volé mes fringues ?",
+  "UI_KAO_stripPlayer_SAY_03": "C'est encore un coup du Juge ça !",
+  "UI_KAO_stripPlayer_SAY_04": "y'a des voyeurs dans le coin !",
+  "UI_KAO_superGoku_EFFECT": "Kaméhaméha",
+  "UI_KAO_superGoku_MSG_OFF": "La Terre est sauvée... pour cette fois.",
+  "UI_KAO_superGoku_MSG_ON": "Kaméhaméha !",
+  "UI_KAO_superMario_EFFECT": "It's me Mario",
+  "UI_KAO_superMario_MSG_OFF": "Thank you Mario! But our princess is in another castle!",
+  "UI_KAO_superMario_MSG_ON": "It's me Mario !",
+  "UI_KAO_superMario_NAME": "Super Mario",
+  "UI_KAO_superMask_EFFECT": "The Mask",
+  "UI_KAO_superMask_MSG_OFF": "Piquantes ces petites merguez",
+  "UI_KAO_superMask_MSG_ON": "Ssssssplendide",
+  "UI_KAO_superTorch_EFFECT": "Torche Humaine",
+  "UI_KAO_superTorch_MSG_OFF": "Extinction des feux.",
+  "UI_KAO_superTorch_MSG_ON": "Fumer à coté d'une pompe à essence c'est sympa en fait",
+  "UI_KAO_teleportBack_MSG": "Retour a la position sauvegardee.",
+  "UI_KAO_teleportBack_MSG_MISSING": "Aucune position sauvegardee.",
+  "UI_KAO_teleportBack_MSG_NONE": "Aucune position sauvegardée pour se téléporter.",
+  "UI_KAO_teleportBack_MSG_TO_AREA": "Téléporté vers : %s",
+  "UI_KAO_teleportBack_NAME": "Retour position sauvée",
+  "UI_KAO_tt_NAME": "Décocher retire l'action des tirages aléatoires (Watch me die!, roulette). Une action demandée par un viewer s'exécute toujours.",
+  "UI_KAO_viewerRoulette_MSG_RESULT": "Roulette : %s !",
+  "UI_KAO_viewerRoulette_NAME": "Roulette des viewers",
+  "UI_KAO_viewerRoulette_SAY_01": "La roue tourne...",
+  "UI_KAO_viewerRoulette_SAY_02": "Faites vos jeux, rien ne va plus !",
+  "UI_KAO_xyz_MSG": "Teleporte aux coordonnees.",
+  "UI_KAO_xyz_NAME": "Téléportation XYZ",
+  "UI_KAO_zombieBlast_MSG": "Explosion de zombies !",
+  "UI_KAO_zombieBlast_MSG_BLASTED": "zombieBlast: %d zombies deplaces.",
+  "UI_KAO_zombieBlast_MSG_NO_ZOMBIES": "Aucun zombie trouve dans la zone.",
+  "UI_KAO_zombieBlast_NAME": "Zombie Blast",
+  "UI_KAO_zombieBlast_SAY_01": "Hulk Démolition !",
+  "UI_KAO_zombieFreeze_EFFECT": "Zombies gelés",
+  "UI_KAO_zombieFreeze_MSG_NO_ZOMBIES": "Personne à faire tomber dans le coin...",
+  "UI_KAO_zombieFreeze_NAME": "Gel des zombies",
+  "UI_KAO_zombieFreeze_SAY_01": "Tous à terre !",
+  "UI_KAO_zombieFreeze_SAY_02": "Restez couchés, bande de zeds !",
+  "UI_KAO_zombieHidden_EFFECT": "Zombies invisibles",
+  "UI_KAO_zombieHidden_MSG_END": "Je les revois ! Et je regrette déjà.",
+  "UI_KAO_zombieHidden_SAY_01": "Je vois des gens qui sont morts... enfin, plus maintenant.",
+  "UI_KAO_zombieHidden_SAY_02": "Ils sont là... quelque part.",
+  "UI_KAO_zombieHidden_SAY_03": "Un bruit de pas. Deux bruits de pas. Beaucoup de bruits de pas.",
+  "UI_KAO_zombieRain_MSG": "Il pleut des zombies maintenant, quel monde de merde !",
+  "UI_KAO_zombieRain_SAY_01": "Il pleut des cadavres ! Sortez les parapluies !",
+  "UI_KAO_zombieSpawn_MSG": "Des zombies apparaissent !",
+  "UI_KAO_zombieSpawn_NAME": "Spawn de zombies",
+  "UI_KAO_zombieSpawn_SAY_01": "Ils sont fous ces zombies !",
+  "UI_KAO_zombieSpawn_SAY_02": "On peut tromper une fois mille zombies... mais pas mille fois mille zombies.",
+  "UI_KAO_zombieSpawn_SAY_05": "Par Toutatis, ils sortent de partout !",
+  "UI_KAO_zombieSpeedEvent_MSG": "Les zombies changent de vitesse !",
+  "UI_KAO_zombieSpeedEvent_NAME": "Vitesse des zombies",
+  "UI_KAO_zombieSpeedEvent_SAY_01": "Les zombies... ils sont differents.",
+  "UI_KAO_zombieSpeedEvent_SAY_02": "Leur vitesse a change !",
+  "UI_KAO_zombie_StripperBlack_NAME": "Stripteaseuse",
+  "UI_KAO_zombie_ambusher_NAME": "Embusqué",
+  "UI_KAO_zombie_biker_NAME": "Biker",
+  "UI_KAO_zombie_biker_SAY_01": "Ce blouson, ce n'est pas juste un morceau de cuir. C'est ma famille. Tu touches à un membre du club, tu finis sous mes roues.",
+  "UI_KAO_zombie_boss_NAME": "Boss",
+  "UI_KAO_zombie_charger_NAME": "Fonceur",
+  "UI_KAO_zombie_chef_NAME": "Chef",
+  "UI_KAO_zombie_chef_SAY_01": "Trancher, émincer, faire mijoter... Un bon coup de couteau fait toute la différence entre un festin de roi et de la pâtée pour chiens. ",
+  "UI_KAO_zombie_clown_NAME": "Clown",
+  "UI_KAO_zombie_clown_SAY_01": "Me tuer ? Hahaha... insupportable garnement! Sache, enfants que je suis éternel! Je suis le dévoreur des petits enfants!",
+  "UI_KAO_zombie_companion_NAME": "Compagnon",
+  "UI_KAO_zombie_crawler_NAME": "Rampant",
+  "UI_KAO_zombie_crawler_SAY_01": "Si tu entends un bruit de viande qui traîne sur le béton... Ne regarde pas en l'air. Regarde tes pieds.",
+  "UI_KAO_zombie_doctor_NAME": "Dr Hannibal",
+  "UI_KAO_zombie_doctor_SAY_01": "J'aimerais poursuivre cette conversation mais j'ai un vieil ami pour le diner.",
+  "UI_KAO_zombie_fastShambler_NAME": "Shambler",
+  "UI_KAO_zombie_fastShambler_SAY_01": "Attendez une minute... Les zombies ne sont pas censés courir comme ça ! C'est pas juste !",
+  "UI_KAO_zombie_fireman_NAME": "Pompier",
+  "UI_KAO_zombie_fireman_SAY_01": "Au feu, les pompiers ! V'là la maison qui brûle !",
+  "UI_KAO_zombie_generic_NAME": "GZombie",
+  "UI_KAO_zombie_hockeyPsycho_NAME": "Jason Voorhees",
+  "UI_KAO_zombie_hockeyPsycho_SAY_01": "Tch tch tch... ah ah ah...",
+  "UI_KAO_zombie_horde_NAME": "HZombie",
+  "UI_KAO_zombie_hunter_NAME": "Chasseur",
+  "UI_KAO_zombie_hunter_SAY_01": "Un bon chasseur ne se contente pas de frapper fort. Il étudie sa proie, ses faiblesses, et utilise l'environnement pour la faire tomber.",
+  "UI_KAO_zombie_inmate_NAME": "Michael Scofield",
+  "UI_KAO_zombie_inmate_SAY_01": "J'ai paaaaaaaaaaaaaaaasle temps, mon esprit glisse ailleuuuuuuuuuuuuuuuurs.",
+  "UI_KAO_zombie_judge_NAME": "Juge",
+  "UI_KAO_zombie_katana_NAME": "Samouraï",
+  "UI_KAO_zombie_katana_SAY_01": "I am Jin Sakai. The Ghost of Tsushima. And I will not let my people die.",
+  "UI_KAO_zombie_military_NAME": "Militaire",
+  "UI_KAO_zombie_military_SAY_01": "Contact hostile confirme. Engagez a volonte.",
+  "UI_KAO_zombie_nurse_NAME": "Nurse",
+  "UI_KAO_zombie_nurse_SAY_01": "Prepare for your examination!",
+  "UI_KAO_zombie_pinata_NAME": "Piñata",
+  "UI_KAO_zombie_police_NAME": "Policier",
+  "UI_KAO_zombie_police_SAY_01": "All units, we have a suspect fleeing. Authorization to use lethal force is granted",
+  "UI_KAO_zombie_rain_NAME": "RZombie",
+  "UI_KAO_zombie_screamer_NAME": "Hurleur",
+  "UI_KAO_zombie_skeleton_NAME": "Squelette",
+  "UI_KAO_zombie_skeleton_SAY_01": "Bow before the King of Bones!",
+  "UI_KAO_zombie_sprinter_NAME": "Sprinter",
+  "UI_KAO_zombie_stripper_NAME": "Lapines",
+  "UI_KAO_zombie_survivor_NAME": "Survivant",
+  "UI_KAO_zombie_tank_NAME": "Tank",
+  "UI_KAO_zombie_zombieKatana_MSG": "Des samourais morts-vivants !"
+}
+;
+
+// Un fichier de traduction pese quelques centaines de Ko : au-dela, c'est une
+// erreur de manipulation, et charger 200 Mo figerait l'onglet.
+const MAX_FILE_BYTES = 8 * 1024 * 1024;
+const NOTE_PREFIX = "_note_";
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, "0");
+
+document.getElementById("mod-version").textContent = MOD_VERSION;
+
+/* ---------- onglets ---------- */
+
+for (const tab of document.querySelectorAll(".tab")) {
+  tab.addEventListener("click", () => {
+    for (const other of document.querySelectorAll(".tab")) {
+      const on = other === tab;
+      other.setAttribute("aria-selected", String(on));
+      $("panel-" + other.dataset.tab).classList.toggle("hidden", !on);
+    }
+  });
+}
+
+/* ---------- lecture de fichier, bornee ---------- */
+
+function readJsonFile(file, onDone, onError) {
+  if (!file) return;
+  if (file.size > MAX_FILE_BYTES) {
+    onError("Fichier trop volumineux (" + Math.round(file.size / 1048576) + " Mo). " +
+            "Un fichier de traduction en fait quelques centaines de Ko.");
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try {
+      data = JSON.parse(String(reader.result));
+    } catch (err) {
+      onError("JSON invalide — " + err.message);
+      return;
+    }
+    if (!data || typeof data !== "object" || Array.isArray(data)) {
+      onError("Le fichier doit contenir un objet JSON.");
+      return;
+    }
+    onDone(data, file.name);
+  };
+  reader.onerror = () => onError("Lecture impossible.");
+  reader.readAsText(file, "utf-8");
+}
+
+/* ================= ONGLET TRADUCTIONS ================= */
+
+const state = { fileName: "UI.json", families: [], leftovers: {}, obsolete: [] };
+
+function splitIndex(key) {
+  const m = key.match(/^(.*?)(\d{1,3})$/);
+  return m ? { base: m[1], index: parseInt(m[2], 10) } : { base: key, index: null };
+}
+
+const ROLES = { NAME:"nom", SAY:"réplique", MSG:"message", EFFECT:"effet", SYSTEM:"système" };
+
+function parseKey(base) {
+  const parts = base.replace(/^UI_KAO_/, "").split("_");
+  if (parts[0] === "SYSTEM") {
+    return { scope:"SYSTEM", role:"SYSTEM", label: parts.slice(1).join(" ").toLowerCase() };
+  }
+  const grouped = (parts[0] === "zombie" || parts[0] === "costume") ? 2 : 1;
+  const scope = parts.slice(0, grouped).join("_");
+  const rest = parts.slice(grouped);
+  const role = ROLES[rest[0]] ? rest[0] : null;
+  const detail = (role ? rest.slice(1) : rest).join(" ").toLowerCase();
+  return { scope, role, label: detail ? scope + " · " + detail : scope };
+}
+
+const placeholders = t => (String(t).match(/%(?:\d+\$)?[.\d]*[a-zA-Z%]/g) || []).sort();
+const samePlaceholders = (a, b) => {
+  const pa = placeholders(a), pb = placeholders(b);
+  return pa.length === pb.length && pa.every((v, i) => v === pb[i]);
+};
+
+function keyAt(fam, i) { return fam.numbered ? fam.base + pad(fam.variants[i].index) : fam.base; }
+function renumber(fam) { fam.variants.forEach((v, i) => { v.index = i + 1; }); fam.gap = null; }
+function isDirty(fam, i) {
+  const v = fam.variants[i];
+  return v.originalKey === null || v.value !== v.originalValue || v.originalKey !== keyAt(fam, i);
+}
+function reference(fam, i) {
+  const v = fam.variants[i];
+  if (v.originalValue !== null) return v.originalValue;
+  const first = fam.variants.find(x => x.originalValue !== null);
+  return first ? first.originalValue : null;
+}
+function entryOk(fam, i) {
+  const ref = reference(fam, i);
+  return ref === null || samePlaceholders(ref, fam.variants[i].value);
+}
+function familyIssue(fam) { return fam.gap !== null || fam.variants.some((_, i) => !entryOk(fam, i)); }
+function familyHasNew(fam) { return fam.variants.some(v => v.isNew); }
+
+function recomputeGap(fam) {
+  fam.gap = null;
+  if (!fam.numbered) return;
+  fam.variants.forEach((v, i) => { if (fam.gap === null && v.index !== i + 1) fam.gap = i + 1; });
+}
+
+/// Fusionne le fichier du joueur avec la reference du mod : les cles ajoutees
+/// depuis sa derniere mise a jour arrivent avec le texte d'origine, marquees.
+function build(playerData) {
+  state.families = [];
+  state.leftovers = {};
+  state.obsolete = [];
+
+  const notes = {};
+  const player = {};
+  for (const [key, value] of Object.entries(playerData || {})) {
+    if (key.startsWith(NOTE_PREFIX)) { notes[key.slice(NOTE_PREFIX.length)] = String(value); continue; }
+    if (typeof value !== "string") { state.leftovers[key] = value; continue; }
+    player[key] = value;
+    if (!(key in REF_TEXTS)) state.obsolete.push(key);
+  }
+
+  const byBase = new Map();
+  for (const [key, refValue] of Object.entries(REF_TEXTS)) {
+    const { base, index } = splitIndex(key);
+    const useBase = index === null ? key : base;
+    if (!byBase.has(useBase)) byBase.set(useBase, { base: useBase, rows: [] });
+    const isNew = playerData !== null && !(key in player);
+    byBase.get(useBase).rows.push({
+      key, index,
+      value: (key in player) ? player[key] : refValue,
+      isNew,
+    });
+  }
+
+  for (const raw of byBase.values()) {
+    raw.rows.sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+    const fam = {
+      base: raw.base,
+      numbered: raw.rows.length > 1 || raw.rows[0].index !== null,
+      category: (() => { const r = parseKey(raw.base).role; return r ? ROLES[r] : null; })(),
+      label: parseKey(raw.base).label,
+      readOnly: parseKey(raw.base).scope === "SYSTEM",
+      note: notes[raw.base] || "",
+      variants: raw.rows.map((r, i) => ({
+        value: r.value,
+        originalKey: r.key,
+        originalValue: r.value,
+        index: r.index === null ? i + 1 : r.index,
+        isNew: r.isNew,
+      })),
+    };
+    recomputeGap(fam);
+    state.families.push(fam);
+  }
+}
+
+function addVariant(fam, at) {
+  if (!fam.numbered) fam.numbered = true;
+  fam.variants.splice(at + 1, 0,
+    { value:"", originalKey:null, originalValue:null, index:0, isNew:false });
+  renumber(fam);
+}
+function removeVariant(fam, at) {
+  if (fam.variants.length <= 1) { fam.variants[0].value = ""; return; }
+  fam.variants.splice(at, 1);
+  const only = fam.variants[0];
+  if (fam.variants.length === 1 && only.originalKey !== null &&
+      splitIndex(only.originalKey).index === null) fam.numbered = false;
+  renumber(fam);
+}
+
+function autoGrow(el) { el.style.height = "auto"; el.style.height = (el.scrollHeight + 2) + "px"; }
+
+function render() {
+  const list = $("list");
+  list.textContent = "";
+  const term = $("search").value.trim().toLowerCase();
+  const filter = $("filter").value;
+  let shown = 0;
+
+  for (const fam of state.families) {
+    if (filter === "dirty" && !fam.variants.some((_, i) => isDirty(fam, i))) continue;
+    if (filter === "new" && !familyHasNew(fam)) continue;
+    if (filter === "editable" && fam.readOnly) continue;
+    if (filter === "issue" && !familyIssue(fam)) continue;
+    if (term) {
+      const hay = (fam.base + " " + fam.note + " " + fam.variants.map(v => v.value).join(" ")).toLowerCase();
+      if (!hay.includes(term)) continue;
+    }
+    list.appendChild(renderFamily(fam));
+    shown++;
+  }
+
+  $("no-match").classList.toggle("hidden", shown > 0);
+  updateStats();
+}
+
+function renderFamily(fam) {
+  const card = document.createElement("section");
+  card.className = "card";
+
+  const head = document.createElement("div");
+  head.className = "card-head";
+  head.appendChild(Object.assign(document.createElement("span"),
+    { className:"card-name", textContent: fam.label }));
+  if (fam.category) head.appendChild(Object.assign(document.createElement("span"),
+    { className:"chip", textContent: fam.category }));
+  if (fam.readOnly) head.appendChild(Object.assign(document.createElement("span"),
+    { className:"chip locked", textContent:"lecture seule" }));
+  if (familyHasNew(fam)) head.appendChild(Object.assign(document.createElement("span"),
+    { className:"chip new", textContent:"nouveau" }));
+  if (fam.variants.length > 1) head.appendChild(Object.assign(document.createElement("span"),
+    { className:"count", textContent: fam.variants.length + " variantes tirées au hasard" }));
+
+  if (fam.gap !== null) {
+    const fix = document.createElement("button");
+    fix.className = "flag";
+    fix.textContent = "trou en " + pad(fam.gap) + " — la suite ne sort jamais · réparer";
+    fix.addEventListener("click", () => { renumber(fam); render(); });
+    head.appendChild(fix);
+  }
+  card.appendChild(head);
+
+  const noteRow = document.createElement("div");
+  noteRow.className = "note-row";
+  const label = document.createElement("label");
+  label.textContent = "Note";
+  const noteArea = document.createElement("textarea");
+  noteArea.className = "note-field";
+  noteArea.rows = 1;
+  noteArea.id = "note-" + fam.base;
+  noteArea.placeholder = "À quoi sert cette phrase, quand elle se déclenche…";
+  noteArea.value = fam.note;
+  noteArea.addEventListener("input", () => { fam.note = noteArea.value; autoGrow(noteArea); });
+  label.htmlFor = noteArea.id;
+  noteRow.append(label, noteArea);
+  card.appendChild(noteRow);
+
+  fam.variants.forEach((_, i) => card.appendChild(renderEntry(fam, i)));
+  requestAnimationFrame(() => card.querySelectorAll("textarea").forEach(autoGrow));
+  return card;
+}
+
+function renderEntry(fam, i) {
+  const variant = fam.variants[i];
+  const row = document.createElement("div");
+  row.className = "entry";
+
+  const keyCell = document.createElement("div");
+  keyCell.className = "entry-key";
+  if (fam.numbered) {
+    const num = document.createElement("b");
+    num.textContent = pad(i + 1);
+    if (variant.originalKey === null || variant.isNew) num.className = "added";
+    keyCell.append(fam.base, num);
+  } else {
+    keyCell.textContent = fam.base;
+  }
+  row.appendChild(keyCell);
+
+  const main = document.createElement("div");
+  main.className = "entry-main";
+  const area = document.createElement("textarea");
+  area.rows = 1;
+  area.value = variant.value;
+  if (variant.originalKey === null) area.placeholder = "Nouvelle variante…";
+
+  const meta = document.createElement("div");
+  meta.className = "entry-meta";
+  const info = document.createElement("small");
+  const reset = document.createElement("button");
+  reset.className = "ghost";
+  reset.textContent = "Rétablir";
+  reset.addEventListener("click", () => {
+    variant.value = variant.originalValue;
+    area.value = variant.originalValue;
+    autoGrow(area); refresh(); updateStats();
+  });
+
+  function refresh() {
+    const ok = entryOk(fam, i);
+    area.classList.toggle("is-new", variant.isNew && !isDirty(fam, i));
+    area.classList.toggle("dirty", isDirty(fam, i) && ok && !variant.isNew);
+    area.classList.toggle("mismatch", !ok);
+    info.className = ok ? "" : "bad";
+    if (!ok) {
+      const want = placeholders(reference(fam, i));
+      info.textContent = want.length ? "Variables attendues : " + want.join(" ")
+                                     : "Cette ligne ne devrait contenir aucune variable";
+    } else if (variant.isNew) {
+      info.textContent = "Ajoutée par la mise à jour du mod";
+    } else {
+      const p = placeholders(variant.value);
+      info.textContent = p.length ? "Variables : " + p.join(" ") : "";
+    }
+    reset.classList.toggle("hidden", variant.originalValue === null || variant.value === variant.originalValue);
+  }
+
+  area.addEventListener("input", () => {
+    variant.value = area.value;
+    if (variant.isNew) variant.isNew = false;
+    autoGrow(area); refresh(); updateStats();
+  });
+
+  refresh();
+  meta.append(info, reset);
+  main.append(area, meta);
+  row.appendChild(main);
+
+  const actions = document.createElement("div");
+  actions.className = "entry-actions";
+  if (fam.readOnly) { area.readOnly = true; row.appendChild(actions); return row; }
+
+  const plus = document.createElement("button");
+  plus.className = "icon";
+  plus.textContent = "+";
+  plus.title = "Ajouter une variante";
+  plus.setAttribute("aria-label", plus.title);
+  plus.addEventListener("click", () => { addVariant(fam, i); render(); });
+  actions.appendChild(plus);
+
+  const solo = fam.variants.length === 1;
+  const minus = document.createElement("button");
+  minus.className = "icon minus";
+  minus.textContent = "−";
+  minus.title = solo ? "Vider cette phrase (la clef est conservée)" : "Supprimer cette variante";
+  minus.setAttribute("aria-label", minus.title);
+  minus.disabled = solo && variant.value === "";
+  minus.addEventListener("click", () => { removeVariant(fam, i); render(); });
+  actions.appendChild(minus);
+
+  row.appendChild(actions);
+  return row;
+}
+
+function updateStats() {
+  let dirty = 0, fresh = 0;
+  for (const fam of state.families) {
+    fam.variants.forEach((v, i) => {
+      if (isDirty(fam, i)) dirty++;
+      if (v.isNew) fresh++;
+    });
+  }
+  $("stat-fam").textContent = state.families.length;
+  $("stat-dirty").textContent = dirty;
+  $("stat-new").textContent = fresh;
+}
+
+function buildOutput() {
+  const out = {};
+  for (const fam of state.families) {
+    const note = fam.note.trim();
+    if (note) out[NOTE_PREFIX + fam.base] = note;
+    fam.variants.forEach((v, i) => { out[keyAt(fam, i)] = v.value; });
+  }
+  Object.assign(out, state.leftovers);
+  return JSON.stringify(out, null, 2) + "\n";
+}
+
+function download(text, name) {
+  const blob = new Blob([text], { type:"application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function showObsolete() {
+  const box = $("obsolete");
+  box.textContent = "";
+  if (state.obsolete.length === 0) { box.classList.add("hidden"); return; }
+  const title = document.createElement("h2");
+  title.textContent = "Clés disparues du mod";
+  const p = document.createElement("p");
+  p.textContent = state.obsolete.length + " clé(s) de ton fichier n'existent plus : " +
+    state.obsolete.slice(0, 6).join(", ") +
+    (state.obsolete.length > 6 ? "…" : "") +
+    ". Elles ne sont pas reprises dans le téléchargement.";
+  box.append(title, p);
+  box.classList.remove("hidden");
+}
+
+function openEditor() {
+  $("drop").classList.add("hidden");
+  $("editor").classList.remove("hidden");
+  showObsolete();
+  render();
+}
+
+function tradError(msg) {
+  const el = $("drop-error");
+  el.textContent = msg || "";
+  el.classList.toggle("hidden", !msg);
+}
+
+$("pick").addEventListener("click", () => $("file").click());
+$("fresh").addEventListener("click", () => { build(null); tradError(""); openEditor(); });
+$("file").addEventListener("change", e => {
+  readJsonFile(e.target.files[0],
+    (data, name) => { state.fileName = name || "UI.json"; build(data); tradError(""); openEditor(); },
+    tradError);
+});
+$("search").addEventListener("input", render);
+$("filter").addEventListener("change", render);
+$("download").addEventListener("click", () => download(buildOutput(), state.fileName));
+
+const drop = $("drop");
+for (const ev of ["dragenter", "dragover"])
+  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); });
+for (const ev of ["dragleave", "drop"])
+  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); });
+drop.addEventListener("drop", e => {
+  readJsonFile(e.dataTransfer.files[0],
+    (data, name) => { state.fileName = name || "UI.json"; build(data); tradError(""); openEditor(); },
+    tradError);
+});
+
+/* ================= ONGLET CONFIGURATION ================= */
+
+const cfg = { overrides: {}, tag: "" };
+
+function defaultOf(action, param) {
+  const p = action.params.find(x => x.name === param);
+  return p && p.default !== undefined ? p.default : "";
+}
+
+function typedValue(param, raw) {
+  if (raw === "" || raw === null || raw === undefined) return undefined;
+  if (param.type === "boolean") return raw === true || raw === "true";
+  if (param.type === "number") { const n = Number(raw); return Number.isNaN(n) ? undefined : n; }
+  return String(raw);
+}
+
+function cfgCount() {
+  let n = 0;
+  for (const params of Object.values(cfg.overrides)) n += Object.keys(params).length;
+  return n;
+}
+
+function renderConfig() {
+  const list = $("cfg-list");
+  list.textContent = "";
+  const term = $("cfg-search").value.trim().toLowerCase();
+
+  for (const action of REF_ACTIONS) {
+    const settable = (action.params || []).filter(p => p.default !== undefined);
+    if (settable.length === 0) continue;
+    if (term && !action.name.toLowerCase().includes(term) &&
+        !(action.category || "").toLowerCase().includes(term)) continue;
+
+    const card = document.createElement("section");
+    card.className = "card";
+
+    const head = document.createElement("div");
+    head.className = "card-head";
+    head.appendChild(Object.assign(document.createElement("span"),
+      { className:"card-name", textContent: action.name }));
+    if (action.category) head.appendChild(Object.assign(document.createElement("span"),
+      { className:"chip", textContent: action.category }));
+    card.appendChild(head);
+
+    if (action.description) {
+      card.appendChild(Object.assign(document.createElement("p"),
+        { className:"card-desc", textContent: action.description }));
+    }
+
+    for (const param of settable) card.appendChild(renderConfigParam(action, param));
+    list.appendChild(card);
+  }
+
+  $("cfg-count").textContent = cfgCount();
+}
+
+function renderConfigParam(action, param) {
+  const row = document.createElement("div");
+  row.className = "param";
+
+  const name = document.createElement("div");
+  name.className = "param-name";
+  name.textContent = param.name;
+  row.appendChild(name);
+
+  const holder = document.createElement("div");
+  const current = (cfg.overrides[action.name] || {})[param.name];
+  const shown = current !== undefined ? current : param.default;
+  let input;
+
+  if (param.values && param.values.length) {
+    input = document.createElement("select");
+    for (const value of param.values) {
+      const opt = document.createElement("option");
+      opt.value = value; opt.textContent = value;
+      input.appendChild(opt);
+    }
+    input.value = String(shown);
+  } else if (param.type === "boolean") {
+    input = document.createElement("select");
+    for (const value of ["true", "false"]) {
+      const opt = document.createElement("option");
+      opt.value = value; opt.textContent = value;
+      input.appendChild(opt);
+    }
+    input.value = String(shown);
+  } else if (param.type === "number") {
+    input = document.createElement("input");
+    input.type = "number";
+    if (param.min !== undefined) input.min = param.min;
+    if (param.max !== undefined) input.max = param.max;
+    if (param.step !== undefined) input.step = param.step;
+    input.value = shown;
+  } else {
+    input = document.createElement("input");
+    input.type = "text";
+    input.value = shown;
+  }
+
+  function apply() {
+    const value = typedValue(param, input.value);
+    const isDefault = String(value) === String(param.default);
+    cfg.overrides[action.name] = cfg.overrides[action.name] || {};
+    if (isDefault || value === undefined) {
+      delete cfg.overrides[action.name][param.name];
+      if (Object.keys(cfg.overrides[action.name]).length === 0) delete cfg.overrides[action.name];
+    } else {
+      cfg.overrides[action.name][param.name] = value;
+    }
+    row.classList.toggle("changed", !isDefault);
+    $("cfg-count").textContent = cfgCount();
+  }
+
+  input.addEventListener("change", apply);
+  input.addEventListener("input", apply);
+  row.classList.toggle("changed", current !== undefined);
+  holder.appendChild(input);
+  row.appendChild(holder);
+
+  const desc = document.createElement("div");
+  desc.className = "param-desc";
+  const bounds = [];
+  if (param.min !== undefined && param.max !== undefined) bounds.push(param.min + " à " + param.max);
+  bounds.push("défaut : " + param.default);
+  desc.textContent = (param.description ? param.description + " — " : "") + bounds.join(", ");
+  row.appendChild(desc);
+
+  return row;
+}
+
+function buildConfigOutput() {
+  const out = {};
+  if (cfg.tag.trim()) out.tag = cfg.tag.trim();
+  if (Object.keys(cfg.overrides).length) out.actions = cfg.overrides;
+  return JSON.stringify(out, null, 2) + "\n";
+}
+
+$("cfg-search").addEventListener("input", renderConfig);
+$("cfg-tag").addEventListener("input", e => { cfg.tag = e.target.value; });
+$("cfg-pick").addEventListener("click", () => $("cfg-file").click());
+$("cfg-file").addEventListener("change", e => {
+  readJsonFile(e.target.files[0], data => {
+    cfg.tag = typeof data.tag === "string" ? data.tag : "";
+    cfg.overrides = (data.actions && typeof data.actions === "object") ? data.actions : {};
+    $("cfg-tag").value = cfg.tag;
+    renderConfig();
+  }, msg => window.alert(msg));
+});
+$("cfg-download").addEventListener("click", () => download(buildConfigOutput(), "config.json"));
+
+/* ================= ONGLET STREAMER.BOT ================= */
+
+const bot = { action: REF_ACTIONS[0], chosen: {} };
+
+function renderBotOptions() {
+  const select = $("bot-action");
+  select.textContent = "";
+  for (const action of REF_ACTIONS) {
+    const opt = document.createElement("option");
+    opt.value = action.name;
+    opt.textContent = (action.category ? action.category + " · " : "") + action.name;
+    select.appendChild(opt);
+  }
+}
+
+function renderBot() {
+  const action = bot.action;
+  $("bot-name").textContent = action.name;
+  $("bot-cat").textContent = action.category || "";
+  $("bot-desc").textContent = action.description || "";
+
+  const holder = $("bot-params");
+  holder.textContent = "";
+
+  for (const param of (action.params || [])) {
+    const row = document.createElement("div");
+    row.className = "param";
+
+    const name = document.createElement("label");
+    name.className = "param-name";
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = param.name in bot.chosen || param.required;
+    check.disabled = param.required;
+    check.style.marginRight = "7px";
+    name.appendChild(check);
+    name.appendChild(document.createTextNode(param.name));
+    if (param.required) {
+      const req = document.createElement("span");
+      req.className = "req";
+      req.textContent = " *";
+      name.appendChild(req);
+    }
+    row.appendChild(name);
+
+    const holderCell = document.createElement("div");
+    let input;
+    const start = bot.chosen[param.name] !== undefined ? bot.chosen[param.name]
+                : (param.default !== undefined ? param.default : "");
+
+    if (param.values && param.values.length) {
+      input = document.createElement("select");
+      for (const value of param.values) {
+        const opt = document.createElement("option");
+        opt.value = value; opt.textContent = value;
+        input.appendChild(opt);
+      }
+      input.value = String(start);
+    } else if (param.type === "boolean") {
+      input = document.createElement("select");
+      for (const value of ["true", "false"]) {
+        const opt = document.createElement("option");
+        opt.value = value; opt.textContent = value;
+        input.appendChild(opt);
+      }
+      input.value = String(start);
+    } else if (param.type === "number") {
+      input = document.createElement("input");
+      input.type = "number";
+      if (param.min !== undefined) input.min = param.min;
+      if (param.max !== undefined) input.max = param.max;
+      input.value = start;
+    } else {
+      input = document.createElement("input");
+      input.type = "text";
+      input.value = start;
+    }
+
+    function sync() {
+      if (check.checked) bot.chosen[param.name] = typedValue(param, input.value);
+      else delete bot.chosen[param.name];
+      row.classList.toggle("changed", check.checked);
+      renderBotOutput();
+    }
+    check.addEventListener("change", sync);
+    input.addEventListener("input", sync);
+    input.addEventListener("change", sync);
+    if (param.required) bot.chosen[param.name] = typedValue(param, input.value);
+    row.classList.toggle("changed", check.checked);
+
+    holderCell.appendChild(input);
+    row.appendChild(holderCell);
+
+    const desc = document.createElement("div");
+    desc.className = "param-desc";
+    const bits = [];
+    if (param.min !== undefined && param.max !== undefined) bits.push(param.min + " à " + param.max);
+    if (param.default !== undefined) bits.push("défaut : " + param.default);
+    desc.textContent = (param.description ? param.description : "") +
+                       (bits.length ? (param.description ? " — " : "") + bits.join(", ") : "");
+    row.appendChild(desc);
+
+    holder.appendChild(row);
+  }
+
+  renderBotOutput();
+}
+
+function luaValue(value) {
+  if (typeof value === "number") return String(value);
+  if (typeof value === "boolean") return String(value);
+  const text = String(value);
+  if (text === "true" || text === "false") return text;
+  if (text !== "" && !Number.isNaN(Number(text))) return text;
+  return '"' + text.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+}
+
+function renderBotOutput() {
+  const parts = ['type = "' + bot.action.name + '"'];
+  if ($("bot-viewer").checked) parts.push('viewer = "%user%"');
+  for (const [key, value] of Object.entries(bot.chosen)) {
+    if (value === undefined) continue;
+    parts.push(key + " = " + luaValue(value));
+  }
+  $("bot-out").textContent = "{ " + parts.join(", ") + " }";
+}
+
+$("bot-action").addEventListener("change", e => {
+  bot.action = REF_ACTIONS.find(a => a.name === e.target.value) || REF_ACTIONS[0];
+  bot.chosen = {};
+  renderBot();
+});
+$("bot-viewer").addEventListener("change", renderBotOutput);
+$("bot-copy").addEventListener("click", () => {
+  const text = $("bot-out").textContent;
+  const done = () => { $("bot-copied").textContent = "Commande copiée."; };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, () => {
+      $("bot-copied").textContent = "Copie refusée par le navigateur — sélectionne le texte à la main.";
+    });
+  } else {
+    $("bot-copied").textContent = "Copie indisponible ici — sélectionne le texte à la main.";
+  }
+});
+
+renderBotOptions();
+renderBot();
+renderConfig();
+</script>

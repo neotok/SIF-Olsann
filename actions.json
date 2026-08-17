@@ -1,0 +1,2276 @@
+[
+  {
+    "category": "environment",
+    "description": "Declenche une alarme de maison ou de voiture, avec gyrophare rouge clignotant sur la source",
+    "examples": [
+      "{ type = \"alarm\", viewer = \"%user%\" }",
+      "{ type = \"alarm\", car = true, viewer = \"%user%\" }"
+    ],
+    "name": "alarm",
+    "params": [
+      {
+        "default": "50",
+        "description": "Rayon de recherche en cases",
+        "max": "60",
+        "min": "5",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "true",
+        "description": "Activer le gyrophare rouge clignotant",
+        "name": "rgb",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "60",
+        "description": "Duree de l'alarme en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "250",
+        "description": "Rayon du bruit qui attire les zombies",
+        "max": "5000",
+        "min": "100",
+        "name": "soundRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Alarme de voiture au lieu de maison",
+        "name": "car",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Joue un son d'ambiance tire au hasard (prive au joueur, sans impact sur les zombies)",
+    "examples": [
+      "{ type = \"ambianceSound\", viewer = \"%user%\" }"
+    ],
+    "name": "ambianceSound",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Fait temporairement oublier toutes les competences (niveaux a 0, puis restauration)",
+    "examples": [
+      "{ type = \"amnesia\", viewer = \"%user%\" }",
+      "{ type = \"amnesia\", duration = \"5min\", viewer = \"%user%\" }",
+      "{ type = \"amnesia\", duration = 300, viewer = \"%user%\" }"
+    ],
+    "name": "amnesia",
+    "params": [
+      {
+        "default": "120",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Barricade les fenetres et portes du batiment",
+    "examples": [
+      "{ type = \"barricadeEvent\", viewer = \"%user%\" }",
+      "{ type = \"barricadeEvent\", radius = 150, viewer = \"%user%\" }"
+    ],
+    "name": "barricadeEvent",
+    "params": [
+      {
+        "default": "100",
+        "description": "Rayon de recherche pour le batiment",
+        "max": "500",
+        "min": "10",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Le joueur lache ce qu'il tient en main au sol",
+    "examples": [
+      "{ type = \"butterFingers\", viewer = \"%user%\" }",
+      "{ type = \"butterFingers\", includeSecondary = false, viewer = \"%user%\" }"
+    ],
+    "name": "butterFingers",
+    "params": [
+      {
+        "default": "true",
+        "description": "Lacher aussi la main secondaire",
+        "name": "includeSecondary",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Sabotage ou remise a neuf du vehicule actuel du joueur. Crash natif PZ scale par vitesse, Repair = remise a neuf complete (vehicle:repair natif)",
+    "examples": [
+      "{ type = \"carEvent\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Crash\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Crash\", crashForce = 30, crashDamage = 50, viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"FlatTire\", tireCount = 3, viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Engine\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"StripAll\", viewer = \"%user%\" }",
+      "{ type = \"carEvent\", part = \"Repair\", viewer = \"%user%\" }"
+    ],
+    "name": "carEvent",
+    "params": [
+      {
+        "default": "StripAll",
+        "description": "Evenement vehicule a declencher",
+        "name": "part",
+        "required": false,
+        "type": "string",
+        "values": [
+          "Crash",
+          "FlatTire",
+          "Engine",
+          "GasTank",
+          "StripAll",
+          "Repair"
+        ]
+      },
+      {
+        "default": "1",
+        "description": "Nombre de pneus creves (FlatTire)",
+        "max": "4",
+        "min": "1",
+        "name": "tireCount",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "15",
+        "description": "Force d'impact du crash (Crash)",
+        "max": "50",
+        "min": "5",
+        "name": "crashForce",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "20",
+        "description": "Degats infliges au joueur (Crash)",
+        "max": "100",
+        "min": "0",
+        "name": "crashDamage",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0.35",
+        "description": "Multiplicateur masse pour la force physique Bullet (Crash)",
+        "max": "2.0",
+        "min": "0.01",
+        "name": "crashMassScale",
+        "required": false,
+        "step": "0.05",
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Supprime la repartie du joueur (declenchements automatises)",
+        "name": "silent",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Fait tomber des epaves en feu autour du joueur (le barrage suit ses deplacements). Chute visuelle avec sifflement, ombre grandissante, explosion a l'impact, zombies projetes et flash d'ecran a proximite",
+    "examples": [
+      "{ type = \"carMageddon\", viewer = \"%user%\" }",
+      "{ type = \"carMageddon\", count = 10, delay = 1000, viewer = \"%user%\" }",
+      "{ type = \"carMageddon\", count = 30, duration = 120, viewer = \"%user%\" }"
+    ],
+    "name": "carMageddon",
+    "params": [
+      {
+        "default": "50",
+        "description": "Nombre d'epaves",
+        "max": "200",
+        "min": "1",
+        "name": "count",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Distance min de chute",
+        "max": "100",
+        "min": "1",
+        "name": "minDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "50",
+        "description": "Distance max de chute",
+        "max": "200",
+        "min": "10",
+        "name": "maxDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "5",
+        "description": "Rayon du feu par epave",
+        "max": "15",
+        "min": "0",
+        "name": "fireRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Duree totale de l'event en secondes (ou \"3min\") ; les epaves sont reparties dessus",
+        "max": "1800",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Delai entre impacts en ms (utilise seulement si fourni sans duration)",
+        "max": "10000",
+        "min": "0",
+        "name": "delay",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Coup de fouet : efface fatigue et raideurs musculaires, restaure l'endurance",
+    "examples": [
+      "{ type = \"coffee\", viewer = \"%user%\" }"
+    ],
+    "name": "coffee",
+    "params": []
+  },
+  {
+    "category": "fun",
+    "description": "Spawn un garde du corps policier sprinteur au nom du viewer : il suit le joueur en ouvrant les portes sur son chemin, frappe les zombies proches et se fait attaquer par eux. Il repart au bout de la duree, ou plus tot si les zombies l'abattent.",
+    "examples": [
+      "{ type = \"companion\", viewer = \"%user%\" }",
+      "{ type = \"companion\", style = \"zombie\", viewer = \"%user%\" }",
+      "{ type = \"companion\", duration = \"5min\", damage = 4, viewer = \"%user%\" }"
+    ],
+    "name": "companion",
+    "params": [
+      {
+        "default": "180",
+        "description": "Duree de la garde en temps reel (secondes)",
+        "max": "900",
+        "min": "30",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "2",
+        "description": "Degats infliges par coup aux zombies",
+        "max": "5",
+        "min": "0.5",
+        "name": "damage",
+        "required": false,
+        "step": "0.5",
+        "type": "number"
+      },
+      {
+        "default": "katana",
+        "description": "katana a deux mains, ou attaque a la maniere d'un zombie",
+        "name": "style",
+        "required": false,
+        "type": "string",
+        "values": [
+          "katana",
+          "zombie"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Boule a facettes improvisee : musique, faisceaux de couleur qui balayent le sol, taches de lumiere scintillantes et le joueur qui chante a tue-tete. Le vacarme attire les zombies.",
+    "examples": [
+      "{ type = \"discoInferno\", viewer = \"%user%\" }",
+      "{ type = \"discoInferno\", duration = 120, soundRadius = 250, viewer = \"%user%\" }"
+    ],
+    "name": "discoInferno",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "10",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "120",
+        "description": "Rayon du bruit qui attire les zombies",
+        "max": "500",
+        "min": "20",
+        "name": "soundRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "15",
+        "description": "Portee des faisceaux de la boule disco",
+        "max": "30",
+        "min": "5",
+        "name": "lightRadius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Compteur de dons cumulatif avec spawn de zombies par viewer",
+    "examples": [
+      "{ type = \"donation\", viewer = \"%user%\" }",
+      "{ type = \"donation\", amount = 500, source = \"bits\", viewer = \"%user%\" }",
+      "{ type = \"donation\", amount = 1, source = \"sub\", viewer = \"%user%\" }",
+      "{ type = \"donation\", amount = 10, source = \"gift\", viewer = \"%user%\" }"
+    ],
+    "name": "donation",
+    "params": [
+      {
+        "description": "Montant brut du don, dans l'unite de la source",
+        "max": "10000",
+        "min": "1",
+        "name": "amount",
+        "required": true,
+        "type": "number"
+      },
+      {
+        "default": "Anonymous",
+        "description": "Nom du viewer donateur",
+        "name": "viewer",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "raw",
+        "description": "Origine du don. Convertit le montant en points de don (bits x1, abonnement x100, don offert x100 par abonnement, monnaie x100 soit en centimes). \"raw\" laisse le montant tel quel.",
+        "name": "source",
+        "required": false,
+        "type": "string",
+        "values": [
+          "raw",
+          "bits",
+          "sub",
+          "gift",
+          "money"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Rend le joueur ivre avec effets visuels et comportementaux (titubement : glissades aleatoires proportionnelles au niveau, blackout au-dela de 90). Chaque declenchement ajoute au niveau courant (cumulable jusqu'a 100)",
+    "examples": [
+      "{ type = \"drunk\", viewer = \"%user%\" }",
+      "{ type = \"drunk\", level = 30, duration = \"10min\", viewer = \"%user%\" }"
+    ],
+    "name": "drunk",
+    "params": [
+      {
+        "default": "50",
+        "description": "Quantite d'ivresse ajoutee au niveau courant (cumulable jusqu'a 100 : deux declenchements suffisent a saturer)",
+        "max": "100",
+        "min": "1",
+        "name": "level",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Casse les fenetres a proximite du joueur",
+    "examples": [
+      "{ type = \"explodeWindow\", viewer = \"%user%\" }",
+      "{ type = \"explodeWindow\", radius = 15, count = 3, viewer = \"%user%\" }"
+    ],
+    "name": "explodeWindow",
+    "params": [
+      {
+        "default": "30",
+        "description": "Rayon de recherche en cases",
+        "max": "60",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Nombre de fenetres a casser",
+        "max": "25",
+        "min": "1",
+        "name": "count",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Eteint tous les feux actifs sur la carte",
+    "examples": [
+      "{ type = \"extinguishFire\", viewer = \"%user%\" }"
+    ],
+    "name": "extinguishFire",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Active le mode invincible temporairement",
+    "examples": [
+      "{ type = \"godMode\", viewer = \"%user%\" }",
+      "{ type = \"godMode\", duration = \"10min\", viewer = \"%user%\" }",
+      "{ type = \"godMode\", duration = 600, viewer = \"%user%\" }"
+    ],
+    "name": "godMode",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Soigne completement le joueur (corps, mental, maladie, feu)",
+    "examples": [
+      "{ type = \"heal\", viewer = \"%user%\" }",
+      "{ type = \"heal\", minHealth = 50, fixMoodles = false, viewer = \"%user%\" }"
+    ],
+    "name": "heal",
+    "params": [
+      {
+        "default": "80",
+        "description": "Sante minimum (%) pour declencher",
+        "max": "100",
+        "min": "0",
+        "name": "minHealth",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "true",
+        "description": "Clear tous les moodles",
+        "name": "fixMoodles",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Declenche un evenement helicoptere -- vrai evenement vanilla, ou faux (son seul)",
+    "examples": [
+      "{ type = \"helicopter\", viewer = \"%user%\" }",
+      "{ type = \"helicopter\", fake = true, duration = 60, viewer = \"%user%\" }"
+    ],
+    "name": "helicopter",
+    "params": [
+      {
+        "default": "false",
+        "description": "Si true, joue seulement le son d'helico (faire croire), sans declencher le vrai evenement",
+        "name": "fake",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "30",
+        "description": "Duree du son en mode faux (secondes)",
+        "max": "300",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Change la condition des items tenus en main (full ou zero)",
+    "examples": [
+      "{ type = \"itemCondition\", viewer = \"%user%\" }",
+      "{ type = \"itemCondition\", action = \"zero\", viewer = \"%user%\" }"
+    ],
+    "name": "itemCondition",
+    "params": [
+      {
+        "default": "full",
+        "description": "Action sur la condition",
+        "name": "action",
+        "required": false,
+        "type": "string",
+        "values": [
+          "full",
+          "zero"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Donne des items au joueur (pool thematique ou item precis)",
+    "examples": [
+      "{ type = \"itemSpawn\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"good\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"medic\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"jackpot\", viewer = \"%user%\" }",
+      "{ type = \"itemSpawn\", item = \"Base.Crowbar\", itemNumber = 2, viewer = \"%user%\" }"
+    ],
+    "name": "itemSpawn",
+    "params": [
+      {
+        "default": "good",
+        "description": "Nom d'item PZ (ex: Base.Crowbar) ou pool. Le contenu des pools s'enrichit avec l'age du monde et l'anciennete du personnage (voir core/KAO_ItemPools.lua)",
+        "name": "item",
+        "required": false,
+        "type": "string",
+        "values": [
+          "good",
+          "medic",
+          "food",
+          "weapon",
+          "jackpot",
+          "fun",
+          "bad",
+          "heavy"
+        ]
+      },
+      {
+        "default": "1",
+        "description": "Quantite d'items. Ramenee a 2 au maximum pour le pool heavy",
+        "max": "50",
+        "min": "1",
+        "name": "itemNumber",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Fondu au noir avec image et son effrayant (n'attire pas les zombies)",
+    "examples": [
+      "{ type = \"jumpscare\" }"
+    ],
+    "name": "jumpscare",
+    "params": [
+      {
+        "default": "sadako",
+        "description": "Image affichee (\"custom\" utilise customImage)",
+        "name": "image",
+        "required": false,
+        "type": "string",
+        "values": [
+          "sadako",
+          "custom"
+        ]
+      },
+      {
+        "description": "Chemin d'une image custom (si image=\"custom\")",
+        "name": "customImage",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "scream",
+        "description": "Nom du son SIF a jouer avec l'image",
+        "name": "sound",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Active/desactive l'eau et l'electricite via SandboxOptions",
+    "examples": [
+      "{ type = \"kentuckyUtilities\", viewer = \"%user%\" }",
+      "{ type = \"kentuckyUtilities\", action = \"on\", viewer = \"%user%\" }",
+      "{ type = \"kentuckyUtilities\", action = \"off\", ingameDuration = 5, viewer = \"%user%\" }"
+    ],
+    "name": "kentuckyUtilities",
+    "params": [
+      {
+        "default": "off",
+        "description": "Activer ou desactiver les utilites",
+        "name": "action",
+        "required": false,
+        "type": "string",
+        "values": [
+          "on",
+          "off"
+        ]
+      },
+      {
+        "default": "24",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "168",
+        "min": "2",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Maximise temporairement tous les niveaux de competence du joueur",
+    "examples": [
+      "{ type = \"maximizeLevels\", viewer = \"%user%\" }",
+      "{ type = \"maximizeLevels\", ingameDuration = \"12h\", viewer = \"%user%\" }",
+      "{ type = \"maximizeLevels\", ingameDuration = 48, viewer = \"%user%\" }"
+    ],
+    "name": "maximizeLevels",
+    "params": [
+      {
+        "default": "6",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "720",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Active temporairement une migration massive de zombies convergant vers le joueur",
+    "examples": [
+      "{ type = \"migrationControl\", viewer = \"%user%\" }",
+      "{ type = \"migrationControl\", ingameDuration = 2, viewer = \"%user%\" }",
+      "{ type = \"migrationControl\", sprint = true, multiplier = 8, viewer = \"%user%\" }",
+      "{ type = \"migrationControl\", ingameDuration = \"30min\", multiplier = 8, sprint = true, viewer = \"%user%\" }"
+    ],
+    "name": "migrationControl",
+    "params": [
+      {
+        "default": "1",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "48",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "4",
+        "description": "Multiplicateur de population zombie",
+        "max": "20",
+        "min": "1",
+        "name": "multiplier",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Force les zombies a sprinter vers le joueur",
+        "name": "sprint",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Force la luminosite ambiante (intensite reglable) : la nuit c'est un bonus (on y voit clair), en journee c'est un malus (la vision s'assombrit, comme des lunettes NV en plein jour). Polarite du leaderboard adaptee automatiquement",
+    "examples": [
+      "{ type = \"nightVision\", viewer = \"%user%\" }",
+      "{ type = \"nightVision\", duration = \"10min\", intensity = 0.8, viewer = \"%user%\" }"
+    ],
+    "name": "nightVision",
+    "params": [
+      {
+        "default": "300",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "0.6",
+        "description": "Luminosite ambiante forcee (1 = plein jour)",
+        "max": "1",
+        "min": "0.3",
+        "name": "intensity",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Cauchemar -- rend le sommeil possible immediatement (comme l'option du clic droit), puis reveille le joueur en plein sommeil avec un zombie sans dents qui l'attaque dans la piece. Sans timeout : le prochain sommeil declenche l'event",
+    "examples": [
+      "{ type = \"nightmare\" }",
+      "{ type = \"nightmare\", sleepThreshold = 1, outfit = \"Police\", viewer = \"%user%\" }",
+      "{ type = \"nightmare\", sound = \"SmashWindow\", panic = 80, viewer = \"%user%\" }"
+    ],
+    "name": "nightmare",
+    "params": [
+      {
+        "default": "2",
+        "description": "Heures de jeu de sommeil avant declenchement",
+        "max": "8",
+        "min": "0.5",
+        "name": "sleepThreshold",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "laugh",
+        "description": "Son effrayant",
+        "name": "sound",
+        "required": false,
+        "type": "string",
+        "values": [
+          "laugh",
+          "ZombieSurprisedPlayer",
+          "SmashWindow",
+          "WoodDoorBreak"
+        ]
+      },
+      {
+        "default": "100",
+        "description": "Niveau de panique",
+        "max": "100",
+        "min": "0",
+        "name": "panic",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "1",
+        "description": "Niveau de stress",
+        "max": "1",
+        "min": "0",
+        "name": "stress",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "freddy",
+        "description": "Outfit du zombie (\"freddy\" = Authentic Z, nom vanilla, ou \"random\")",
+        "name": "outfit",
+        "required": false,
+        "type": "string",
+        "values": [
+          "freddy",
+          "random"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Ouvre la porte la plus proche dans un rayon",
+    "examples": [
+      "{ type = \"openDoor\", viewer = \"%user%\" }",
+      "{ type = \"openDoor\", radius = 15, viewer = \"%user%\" }"
+    ],
+    "name": "openDoor",
+    "params": [
+      {
+        "default": "30",
+        "description": "Rayon de recherche en cases",
+        "max": "60",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Crise de panique : panique et stress au maximum pendant la duree",
+    "examples": [
+      "{ type = \"panicAttack\", viewer = \"%user%\" }",
+      "{ type = \"panicAttack\", duration = \"2min\", viewer = \"%user%\" }",
+      "{ type = \"panicAttack\", duration = 90, viewer = \"%user%\" }"
+    ],
+    "name": "panicAttack",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Faux bruits de zombies (grattements, pas, coups) autour du joueur, sans aucun danger reel",
+    "examples": [
+      "{ type = \"paranoia\", viewer = \"%user%\" }",
+      "{ type = \"paranoia\", duration = 120, viewer = \"%user%\" }"
+    ],
+    "name": "paranoia",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Vie supplementaire : si la sante passe sous le seuil, le joueur est soigne et tous les zombies proches meurent dans un flash lumineux",
+    "examples": [
+      "{ type = \"phoenix\", viewer = \"%user%\" }",
+      "{ type = \"phoenix\", threshold = 30, radius = 15, viewer = \"%user%\" }"
+    ],
+    "name": "phoenix",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree de la protection en temps reel (secondes)",
+        "max": "10800",
+        "min": "60",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "20",
+        "description": "Seuil de sante (%) qui declenche la renaissance",
+        "max": "50",
+        "min": "1",
+        "name": "threshold",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Rayon de kill des zombies en tuiles",
+        "max": "30",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Spawn un zombie pinata (lent, resistant) dont l'inventaire est bourre de butin : il suffit de le tuer et de fouiller le corps",
+    "examples": [
+      "{ type = \"pinata\", viewer = \"%user%\" }",
+      "{ type = \"pinata\", lootCount = 10, viewer = \"%user%\" }"
+    ],
+    "name": "pinata",
+    "params": [
+      {
+        "default": "12",
+        "description": "Distance de spawn en tuiles",
+        "max": "30",
+        "min": "5",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "6",
+        "description": "Nombre d'items places dans son inventaire",
+        "max": "15",
+        "min": "1",
+        "name": "lootCount",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Action gunner multi-variante inspiree de Die Hard et Rambo",
+    "examples": [
+      "{ type = \"playerGunner\", viewer = \"%user%\" }",
+      "{ type = \"playerGunner\", variant = \"rambo\", duration = 600, viewer = \"%user%\" }",
+      "{ type = \"playerGunner\", action = \"stop\", viewer = \"%user%\" }"
+    ],
+    "name": "playerGunner",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Variante du gunner (aleatoire si omis)",
+        "name": "variant",
+        "required": false,
+        "type": "string",
+        "values": [
+          "diehard",
+          "rambo",
+          "johnwick",
+          "killbill",
+          "highlander",
+          "samurai",
+          "deadpool",
+          "quiet"
+        ]
+      },
+      {
+        "default": "start",
+        "description": "Action a effectuer",
+        "name": "action",
+        "required": false,
+        "type": "string",
+        "values": [
+          "start",
+          "stop",
+          "halveTime"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Rend le personnage invisible a l'ecran du streamer (alpha de rendu a 0) pendant une duree. Le gameplay continue normalement : les zombies le voient toujours",
+    "examples": [
+      "{ type = \"playerHidden\", viewer = \"%user%\" }",
+      "{ type = \"playerHidden\", duration = 60, viewer = \"%user%\" }"
+    ],
+    "name": "playerHidden",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en secondes (ou \"1min\")",
+        "max": "120",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Rend le joueur invisible aux zombies temporairement. Le personnage reste visible a l'ecran, contrairement a playerHidden",
+    "examples": [
+      "{ type = \"playerInvisibleToZombie\", viewer = \"%user%\" }",
+      "{ type = \"playerInvisibleToZombie\", duration = \"2min\", viewer = \"%user%\" }",
+      "{ type = \"playerInvisibleToZombie\", duration = 120, viewer = \"%user%\" }"
+    ],
+    "name": "playerInvisibleToZombie",
+    "params": [
+      {
+        "default": "60",
+        "description": "Duree en temps reel (secondes)",
+        "max": "3600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Applique une attelle (fracture) sur les jambes + blessure aine",
+    "examples": [
+      "{ type = \"playerTchiTchi\", viewer = \"%user%\" }",
+      "{ type = \"playerTchiTchi\", duration = 60, legs = \"left\", viewer = \"%user%\" }"
+    ],
+    "name": "playerTchiTchi",
+    "params": [
+      {
+        "default": "30",
+        "description": "Duree en temps reel (secondes)",
+        "max": "600",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "both",
+        "description": "Jambes affectees",
+        "name": "legs",
+        "required": false,
+        "type": "string",
+        "values": [
+          "left",
+          "right",
+          "both"
+        ]
+      },
+      {
+        "default": "false",
+        "description": "Skip attelles",
+        "name": "noSplint",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "false",
+        "description": "Skip blessure aine",
+        "name": "noGroin",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Ajoute ou retire des traits du joueur",
+    "examples": [
+      "{ type = \"playerTrait\", viewer = \"%user%\" }",
+      "{ type = \"playerTrait\", trait = \"Athletic\", viewer = \"%user%\" }",
+      "{ type = \"playerTrait\", traitType = \"positive\", viewer = \"%user%\" }",
+      "{ type = \"playerTrait\", traitType = \"negative\", remove = true, viewer = \"%user%\" }"
+    ],
+    "name": "playerTrait",
+    "params": [
+      {
+        "description": "Nom du trait specifique (ex: Athletic, Brave, Smoker)",
+        "name": "trait",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "any",
+        "description": "Type de trait a selectionner",
+        "name": "traitType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "positive",
+          "negative",
+          "any"
+        ]
+      },
+      {
+        "default": "false",
+        "description": "Retirer le trait au lieu de l'ajouter",
+        "name": "remove",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Reveille le joueur et restaure son endurance",
+    "examples": [
+      "{ type = \"playerWakeup\", viewer = \"%user%\" }"
+    ],
+    "name": "playerWakeup",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Inflige des blessures aleatoires au joueur",
+    "examples": [
+      "{ type = \"randomInjury\", injury = \"bullet\", level = 3, viewer = \"%user%\" }",
+      "{ type = \"randomInjury\", viewer = \"%user%\" }"
+    ],
+    "name": "randomInjury",
+    "params": [
+      {
+        "description": "Type de blessure (aleatoire si omis)",
+        "name": "injury",
+        "required": false,
+        "type": "string",
+        "values": [
+          "bullet",
+          "fracture",
+          "scratch",
+          "cut",
+          "deepWound",
+          "burn",
+          "bleeding"
+        ]
+      },
+      {
+        "default": "2",
+        "description": "Niveau de gravite",
+        "max": "4",
+        "min": "1",
+        "name": "level",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Partie du corps specifique",
+        "name": "part",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Fait apparaitre des rats (optionnellement en feu) autour du joueur",
+    "examples": [
+      "{ type = \"ratExplosion\", viewer = \"%user%\" }",
+      "{ type = \"ratExplosion\", number = 5, radius = 5, burn = true, viewer = \"%user%\" }",
+      "{ type = \"ratExplosion\", number = 10, burn = false, viewer = \"%user%\" }"
+    ],
+    "name": "ratExplosion",
+    "params": [
+      {
+        "default": "5",
+        "description": "Nombre de rats",
+        "max": "200",
+        "min": "1",
+        "name": "number",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Rayon de spawn en tuiles",
+        "max": "50",
+        "min": "0",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "true",
+        "description": "Rats en feu",
+        "name": "burn",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Fait revivre les cadavres de zombies au sol",
+    "examples": [
+      "{ type = \"reanimateCorpses\", viewer = \"%user%\" }",
+      "{ type = \"reanimateCorpses\", radius = 20, viewer = \"%user%\" }",
+      "{ type = \"reanimateCorpses\", maxCorpses = 5, viewer = \"%user%\" }"
+    ],
+    "name": "reanimateCorpses",
+    "params": [
+      {
+        "default": "15",
+        "description": "Rayon de recherche en tuiles",
+        "max": "80",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Nombre max a reanimer",
+        "max": "100",
+        "min": "1",
+        "name": "maxCorpses",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Remet a zero toutes les donnees KAO (compteurs, timers, etc.)",
+    "examples": [
+      "{ type = \"resetData\", viewer = \"%user%\" }",
+      "{ type = \"resetData\", confirm = true, viewer = \"%user%\" }"
+    ],
+    "name": "resetData",
+    "params": [
+      {
+        "default": "false",
+        "description": "Doit etre true pour confirmer le reset",
+        "name": "confirm",
+        "required": true,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Cree un anneau de feu autour du joueur, avec son aleatoire",
+    "examples": [
+      "{ type = \"ringOfFire\", viewer = \"%user%\" }",
+      "{ type = \"ringOfFire\", radius = 10, points = 15, viewer = \"%user%\" }"
+    ],
+    "name": "ringOfFire",
+    "params": [
+      {
+        "default": "5",
+        "description": "Rayon de l'anneau en tuiles",
+        "max": "100",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "24",
+        "description": "Nombre de points de feu",
+        "max": "100",
+        "min": "1",
+        "name": "points",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Force un changement d'heure temporaire, avec coupure de courant a minuit.",
+    "examples": [
+      "{ type = \"setTime\", viewer = \"%user%\" }",
+      "{ type = \"setTime\", hour = 12, viewer = \"%user%\" }",
+      "{ type = \"setTime\", hour = 0, duration = \"5min\", viewer = \"%user%\" }"
+    ],
+    "name": "setTime",
+    "params": [
+      {
+        "default": "0",
+        "description": "Heure cible",
+        "max": "23",
+        "min": "0",
+        "name": "hour",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Duree reelle avant retour a l'heure normale (secondes)",
+        "max": "1800",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Controle la meteo du jeu (orage, blizzard, pluie, etc.). A l'expiration,",
+    "examples": [
+      "{ type = \"setWeather\", viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"storm\", viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"blizzard\", ingameDuration = 5, viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"rain\", rain = 0.8, viewer = \"%user%\" }",
+      "{ type = \"setWeather\", eventType = \"stop\", viewer = \"%user%\" }"
+    ],
+    "name": "setWeather",
+    "params": [
+      {
+        "default": "winter",
+        "description": "Type de meteo",
+        "name": "eventType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "storm",
+          "blizzard",
+          "winter",
+          "tropical",
+          "rain",
+          "stop"
+        ]
+      },
+      {
+        "default": "24",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "168",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "0.8",
+        "description": "Intensite de pluie ou de neige",
+        "max": "1",
+        "min": "0",
+        "name": "rain",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "description": "Override de temperature en degres",
+        "max": "50",
+        "min": "-50",
+        "name": "temp",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Valeur de temperature si temp est un boolean true",
+        "max": "50",
+        "min": "-50",
+        "name": "tempValue",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Fait crier le personnage pour attirer les zombies",
+    "examples": [
+      "{ type = \"shout\", viewer = \"%user%\" }",
+      "{ type = \"shout\", radius = 50, viewer = \"%user%\" }"
+    ],
+    "name": "shout",
+    "params": [
+      {
+        "default": "100",
+        "description": "Rayon d'attraction des zombies",
+        "max": "500",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Rend le joueur malade (rhume) pendant une duree definie",
+    "examples": [
+      "{ type = \"sick\", viewer = \"%user%\" }",
+      "{ type = \"sick\", ingameDuration = 24, coldStrength = 100, viewer = \"%user%\" }"
+    ],
+    "name": "sick",
+    "params": [
+      {
+        "default": "50",
+        "description": "Intensite du rhume",
+        "max": "100",
+        "min": "0",
+        "name": "coldStrength",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0.2",
+        "description": "Niveau de maladie",
+        "max": "1",
+        "min": "0",
+        "name": "sickness",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "0.5",
+        "description": "Stage degats froid",
+        "max": "1",
+        "min": "0",
+        "name": "coldDamageStage",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "12",
+        "description": "Duree en temps de jeu (heures)",
+        "max": "168",
+        "min": "1",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps reel (alternative)",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "environment",
+    "description": "Joue un son meta aleatoire et cree un bruit distant",
+    "examples": [
+      "{ type = \"soundEvent\", viewer = \"%user%\" }",
+      "{ type = \"soundEvent\", sound = \"MetaDogBark\", viewer = \"%user%\" }"
+    ],
+    "name": "soundEvent",
+    "params": [
+      {
+        "description": "Force un son specifique",
+        "name": "sound",
+        "required": false,
+        "type": "string",
+        "values": [
+          "MetaAssaultRifle1",
+          "MetaPistol1",
+          "MetaPistol2",
+          "MetaPistol3",
+          "MetaShotgun1",
+          "MetaDogBark",
+          "MetaScream",
+          "MetaOwl",
+          "MetaWolfHowl",
+          "FemaleBeingEatenDeath",
+          "MaleBeingEatenDeath"
+        ]
+      },
+      {
+        "description": "Force un son par index",
+        "max": "11",
+        "min": "1",
+        "name": "soundIndex",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Joue un son UI predefini, une seule fois (aucun son en boucle)",
+    "examples": [
+      "{ type = \"sounds\", viewer = \"%user%\" }",
+      "{ type = \"sounds\", sound = \"random\", viewer = \"%user%\" }",
+      "{ type = \"sounds\", sound = \"Helicopter\", viewer = \"%user%\" }"
+    ],
+    "name": "sounds",
+    "params": [
+      {
+        "default": "SmashWindow",
+        "description": "Nom du son a jouer (\"random\" tire un son parmi le pool prive, sans impact sur les zombies)",
+        "name": "sound",
+        "required": false,
+        "type": "string",
+        "values": [
+          "SmashWindow",
+          "ZombieSurprisedPlayer",
+          "WoodDoorBreak",
+          "Helicopter",
+          "random"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "vehicle",
+    "description": "Fait apparaitre un vehicule a proximite avec cle",
+    "examples": [
+      "{ type = \"spawnCar\", viewer = \"%user%\" }",
+      "{ type = \"spawnCar\", vehicle = \"Base.SportsCar\", viewer = \"%user%\" }"
+    ],
+    "name": "spawnCar",
+    "params": [
+      {
+        "description": "Type de vehicule PZ (aleatoire si omis)",
+        "name": "vehicle",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "70",
+        "description": "Condition min des pieces",
+        "max": "100",
+        "min": "0",
+        "name": "minCondition",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "100",
+        "description": "Condition max des pieces",
+        "max": "100",
+        "min": "0",
+        "name": "maxCondition",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "5",
+        "description": "Distance min de spawn",
+        "max": "50",
+        "min": "1",
+        "name": "minSpawnDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Distance max de spawn",
+        "max": "100",
+        "min": "1",
+        "name": "maxSpawnDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "20",
+        "description": "Distance extra si interieur",
+        "max": "100",
+        "min": "0",
+        "name": "indoorExtraDistance",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Declenche un evenement de maison (ex: judgeEvent)",
+    "examples": [
+      "{ type = \"startEvent\", viewer = \"%user%\" }",
+      "{ type = \"startEvent\", eventId = \"judgeEvent\", stripperCount = 10, viewer = \"TwitchUser123\" }"
+    ],
+    "name": "startEvent",
+    "params": [
+      {
+        "default": "5",
+        "description": "Nombre de zombies stripper spawnes",
+        "max": "20",
+        "min": "1",
+        "name": "stripperCount",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "16",
+        "description": "Surface max (tuiles) des pieces candidates",
+        "max": "100",
+        "min": "4",
+        "name": "maxRoomArea",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "judgeEvent",
+        "description": "Evenement a declencher",
+        "name": "eventId",
+        "required": true,
+        "type": "string",
+        "values": [
+          "judgeEvent"
+        ]
+      },
+      {
+        "description": "Nom du viewer pour attribution",
+        "name": "viewer",
+        "required": false,
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Retire et depose au sol tous les vetements du joueur, puis le rhabille avec une tenue predefinie",
+    "examples": [
+      "{ type = \"stripPlayer\", viewer = \"%user%\" }",
+      "{ type = \"stripPlayer\", outfit = \"lapine\", viewer = \"%user%\" }",
+      "{ type = \"stripPlayer\", outfit = \"random\", dropRadius = 3, viewer = \"%user%\" }"
+    ],
+    "name": "stripPlayer",
+    "params": [
+      {
+        "default": "1",
+        "description": "Rayon de depot au sol",
+        "max": "10",
+        "min": "1",
+        "name": "dropRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "none",
+        "description": "Tenue posee apres le deshabillage",
+        "name": "outfit",
+        "required": false,
+        "type": "string",
+        "values": [
+          "none",
+          "random",
+          "lapine",
+          "lapineRose"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "fun",
+    "description": "Mode invincible avec costume, kill-zone et cercle visuel autour du joueur. Variantes : Mario, Goku, The Mask, Torch (tirage aleatoire par defaut)",
+    "examples": [
+      "{ type = \"superMario\", viewer = \"%user%\" }",
+      "{ type = \"superMario\", variant = \"goku\", viewer = \"%user%\" }",
+      "{ type = \"superMario\", variant = \"theMask\", duration = 60, viewer = \"%user%\" }",
+      "{ type = \"superMario\", variant = \"torch\", viewer = \"%user%\" }"
+    ],
+    "name": "superMario",
+    "params": [
+      {
+        "default": "random",
+        "description": "Personnage/costume",
+        "name": "variant",
+        "required": false,
+        "type": "string",
+        "values": [
+          "random",
+          "mario",
+          "goku",
+          "theMask",
+          "torch"
+        ]
+      },
+      {
+        "default": "30",
+        "description": "Duree en temps reel (secondes)",
+        "max": "10800",
+        "min": "1",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "description": "Duree en temps de jeu (alternative)",
+        "name": "ingameDuration",
+        "required": false,
+        "type": "number|string"
+      },
+      {
+        "default": "2",
+        "description": "Rayon de kill des zombies en tuiles",
+        "max": "10",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Teleportation du joueur : vers une destination (mode to), sauvegarde de la position (mode save) ou retour a la position sauvegardee (mode back). Remplace moveTo/savePos/teleportBack",
+    "examples": [
+      "{ type = \"teleport\", viewer = \"%user%\" }",
+      "{ type = \"teleport\", location = \"Louisville\", viewer = \"%user%\" }",
+      "{ type = \"teleport\", mode = \"save\", viewer = \"%user%\" }",
+      "{ type = \"teleport\", mode = \"back\", viewer = \"%user%\" }"
+    ],
+    "name": "teleport",
+    "params": [
+      {
+        "default": "to",
+        "description": "Operation de teleportation",
+        "name": "mode",
+        "required": false,
+        "type": "string",
+        "values": [
+          "to",
+          "save",
+          "back"
+        ]
+      },
+      {
+        "default": "nearby",
+        "description": "Destination (mode to uniquement)",
+        "name": "location",
+        "required": false,
+        "type": "string",
+        "values": [
+          "nearby",
+          "MarchRidge",
+          "Louisville",
+          "Rosewood",
+          "Muldraugh",
+          "WestPoint",
+          "Riverside",
+          "Ekron",
+          "FallasLake",
+          "Brandenburg",
+          "RosewoodPrison",
+          "EchoCreek",
+          "Irvington"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "events",
+    "description": "Declenche une action aleatoire du registre (roulette russe pour le streamer)",
+    "examples": [
+      "{ type = \"viewerRoulette\", viewer = \"%user%\" }",
+      "{ type = \"viewerRoulette\", pool = \"negative\", viewer = \"%user%\" }"
+    ],
+    "name": "viewerRoulette",
+    "params": [
+      {
+        "default": "all",
+        "description": "Filtre du tirage",
+        "name": "pool",
+        "required": false,
+        "type": "string",
+        "values": [
+          "all",
+          "positive",
+          "negative"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "player",
+    "description": "Affiche les coordonnees actuelles du joueur",
+    "examples": [
+      "{ type = \"xyz\", viewer = \"%user%\" }"
+    ],
+    "name": "xyz",
+    "params": []
+  },
+  {
+    "category": "player",
+    "description": "Onde de choc qui repousse les zombies dans un rayon vers l'exterieur",
+    "examples": [
+      "{ type = \"zombieBlast\", viewer = \"%user%\" }",
+      "{ type = \"zombieBlast\", outerRadius = 30, viewer = \"%user%\" }",
+      "{ type = \"zombieBlast\", pushDistance = 80, viewer = \"%user%\" }",
+      "{ type = \"zombieBlast\", waveSpeed = 1.5, outerRadius = 30, viewer = \"%user%\" }"
+    ],
+    "name": "zombieBlast",
+    "params": [
+      {
+        "default": "20",
+        "description": "Rayon maximum d'effet",
+        "max": "100",
+        "min": "1",
+        "name": "outerRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0",
+        "description": "Rayon interieur epargne par l'onde",
+        "max": "99",
+        "min": "0",
+        "name": "innerRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "60",
+        "description": "Distance de poussee en tuiles",
+        "max": "100",
+        "min": "30",
+        "name": "pushDistance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0.6",
+        "description": "Vitesse d'expansion de l'onde",
+        "max": "3",
+        "min": "0.2",
+        "name": "waveSpeed",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "default": "SledgehammerDrop",
+        "description": "Son au declenchement",
+        "name": "startSound",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "SledgehammerBreak",
+        "description": "Son a la fin de l'onde",
+        "name": "soundName",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "true",
+        "description": "Sons joues en UI (true) ou dans le monde (false)",
+        "name": "localSound",
+        "required": false,
+        "type": "boolean"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Met a terre et gele l'IA des zombies dans un rayon pendant une duree (fenetre de fuite)",
+    "examples": [
+      "{ type = \"zombieFreeze\", viewer = \"%user%\" }",
+      "{ type = \"zombieFreeze\", radius = 25, duration = 20, viewer = \"%user%\" }"
+    ],
+    "name": "zombieFreeze",
+    "params": [
+      {
+        "default": "15",
+        "description": "Rayon d'effet en tuiles",
+        "max": "40",
+        "min": "3",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "10",
+        "description": "Duree du gel en secondes (ou \"30s\")",
+        "max": "60",
+        "min": "3",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Rend tous les zombies invisibles a l'ecran du streamer (alpha de rendu a 0) pendant une duree. Ils continuent de le voir et de l'attaquer",
+    "examples": [
+      "{ type = \"zombieHidden\", viewer = \"%user%\" }",
+      "{ type = \"zombieHidden\", duration = 45, viewer = \"%user%\" }"
+    ],
+    "name": "zombieHidden",
+    "params": [
+      {
+        "default": "20",
+        "description": "Duree en secondes (ou \"1min\")",
+        "max": "90",
+        "min": "5",
+        "name": "duration",
+        "required": false,
+        "type": "number|string"
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Systeme unifie de spawn de zombies (remplace les actions deprecees)",
+    "examples": [
+      "{ type = \"zombieSpawn\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 5, zombieType = \"sprinter\", pattern = \"circle\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 20, pattern = \"horde\", attractSound = true, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 10, pattern = \"rain\", interval = 1, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 30, pattern = \"ring\", minRadius = 20, maxRadius = 60, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"tank\", weapon = \"none\", health = 10, viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"judge\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 3, zombieType = \"ambusher\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"screamer\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpawn\", count = 1, zombieType = \"charger\", viewer = \"%user%\" }"
+    ],
+    "name": "zombieSpawn",
+    "params": [
+      {
+        "default": "1",
+        "description": "Nombre de zombies a faire apparaitre. En pattern rain, le lot est rogne pour que la file globale ne depasse jamais 100 zombies en attente, tous appels confondus",
+        "max": "100",
+        "min": "1",
+        "name": "count",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "generic",
+        "description": "Type de zombie",
+        "name": "zombieType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "random",
+          "generic",
+          "sprinter",
+          "tank",
+          "fastShambler",
+          "crawler",
+          "skeleton",
+          "stripper",
+          "katana",
+          "hockeyPsycho",
+          "police",
+          "military",
+          "fireman",
+          "inmate",
+          "doctor",
+          "nurse",
+          "hunter",
+          "survivor",
+          "biker",
+          "chef",
+          "judge",
+          "horde",
+          "rain",
+          "ambusher",
+          "screamer",
+          "charger"
+        ]
+      },
+      {
+        "default": "circle",
+        "description": "Pattern de spawn",
+        "name": "pattern",
+        "required": false,
+        "type": "string",
+        "values": [
+          "circle",
+          "horde",
+          "ring",
+          "rain",
+          "random",
+          "uniform"
+        ]
+      },
+      {
+        "default": "10",
+        "description": "Rayon principal en tuiles",
+        "max": "50",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "50",
+        "description": "Distance depuis le joueur (pattern horde)",
+        "max": "100",
+        "min": "1",
+        "name": "distance",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Rayon minimum (pattern ring)",
+        "name": "minRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "description": "Rayon maximum (pattern ring)",
+        "name": "maxRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "0",
+        "description": "Intervalle entre spawns en secondes (pattern rain). Les zombies rain tombent au sol et doivent se relever, avec un bruit d'impact entendu du seul joueur",
+        "max": "30",
+        "min": "0",
+        "name": "interval",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Creer un son d'attraction",
+        "name": "attractSound",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "200",
+        "description": "Rayon du son d'attraction",
+        "max": "500",
+        "min": "1",
+        "name": "attractRadius",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "100",
+        "description": "Volume du son d'attraction",
+        "max": "500",
+        "min": "1",
+        "name": "attractVolume",
+        "required": false,
+        "type": "number"
+      },
+      {
+        "default": "false",
+        "description": "Appliquer un etat aleatoire",
+        "name": "applyRandomState",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "description": "Son joue au premier spawn (une fois par commande)",
+        "name": "spawnSound",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "default": "true",
+        "description": "Les zombies vont vers le joueur",
+        "name": "pathToPlayer",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "default": "false",
+        "description": "Jouer une animation au spawn",
+        "name": "playAnimation",
+        "required": false,
+        "type": "boolean"
+      },
+      {
+        "description": "Nom du viewer affiche sur les zombies",
+        "name": "viewer",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "description": "Override le walkType du zombie",
+        "name": "walkType",
+        "required": false,
+        "type": "string",
+        "values": [
+          "sprint1",
+          "sprint2",
+          "sprint3",
+          "sprint4",
+          "sprint5",
+          "slow1",
+          "slow2",
+          "slow3",
+          "none"
+        ]
+      },
+      {
+        "description": "Override l'outfit du zombie (nom PZ ou none)",
+        "name": "outfit",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "description": "Override l'arme du zombie (format Module.Item ou none)",
+        "name": "weapon",
+        "required": false,
+        "type": "string"
+      },
+      {
+        "description": "Override l'etat initial",
+        "name": "spawnState",
+        "required": false,
+        "type": "string",
+        "values": [
+          "standing",
+          "knockedDown",
+          "fakeDead",
+          "crawling",
+          "sitting",
+          "running",
+          "none"
+        ]
+      },
+      {
+        "description": "Sante du zombie (HP)",
+        "max": "100",
+        "min": "0.1",
+        "name": "health",
+        "required": false,
+        "step": "0.1",
+        "type": "number"
+      },
+      {
+        "description": "Override le type de vitesse",
+        "name": "speedType",
+        "required": false,
+        "type": "number",
+        "values": [
+          "1",
+          "2",
+          "3"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "zombies",
+    "description": "Change la vitesse de deplacement des zombies",
+    "examples": [
+      "{ type = \"zombieSpeedEvent\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpeedEvent\", wt = \"Sprint3\", viewer = \"%user%\" }",
+      "{ type = \"zombieSpeedEvent\", wt = \"Slow1\", radius = 40, viewer = \"%user%\" }"
+    ],
+    "name": "zombieSpeedEvent",
+    "params": [
+      {
+        "default": "Sprint1",
+        "description": "WalkType a appliquer",
+        "name": "wt",
+        "required": false,
+        "type": "string",
+        "values": [
+          "Sprint1",
+          "Sprint2",
+          "Sprint3",
+          "Sprint4",
+          "Sprint5",
+          "1",
+          "2",
+          "3",
+          "Slow1",
+          "Slow2",
+          "Slow3"
+        ]
+      },
+      {
+        "default": "20",
+        "description": "Rayon d'effet en tuiles",
+        "max": "80",
+        "min": "1",
+        "name": "radius",
+        "required": false,
+        "type": "number"
+      }
+    ]
+  }
+]
