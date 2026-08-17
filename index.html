@@ -157,7 +157,9 @@
   /* parametres (configuration + Streamer.bot) */
   .param { display:grid; grid-template-columns:190px 200px 1fr; gap:12px;
            padding:8px 16px; align-items:center; border-top:1px solid var(--border); }
-  .param-name { font-family:var(--mono); font-size:12.5px; }
+  .param-name { font-family:var(--mono); font-size:12.5px;
+                display:flex; align-items:center; gap:7px; }
+  .param-name input[type="checkbox"] { margin:0; flex:0 0 auto; }
   .param-name .req { color:var(--warn); }
   .param-desc { font-size:12.5px; color:var(--muted); }
   .param input, .param select { width:100%; }
@@ -221,11 +223,11 @@
       <div class="toolbar">
         <input type="search" id="search" placeholder="Chercher une clé, un texte, une note…" autocomplete="off">
         <select id="filter">
-          <option value="all">Tout</option>
+          <option value="editable" selected>Modifiables</option>
           <option value="new">Nouvelles clés</option>
           <option value="dirty">Modifiées</option>
-          <option value="editable">Modifiables</option>
           <option value="issue">Problèmes</option>
+          <option value="all">Tout, système compris</option>
         </select>
         <button id="download" class="primary">Télécharger</button>
         <div class="stats">
@@ -3237,6 +3239,48 @@ function splitIndex(key) {
 
 const ROLES = { NAME:"nom", SAY:"réplique", MSG:"message", EFFECT:"effet", SYSTEM:"système" };
 
+// Ce que fait chaque role, en clair
+const ROLE_NOTES = {
+  NAME:   "Nom de l'action, affiché dans les options du mod.",
+  SAY:    "Répliques du joueur, tirées au hasard parmi les variantes.",
+  MSG:    "Message dit à un moment précis de l'action.",
+  EFFECT: "Libellé de l'effet dans le bandeau du HUD.",
+  SYSTEM: "Texte technique de l'action.",
+};
+
+const DOMAIN_NOTES = {
+  HUD:"bandeau d'effets", OPTIONS:"menu des options", CREDITS:"générique de fin",
+  MENU:"menu clic droit", BODYPART:"parties du corps", PANEL:"panneau de stream",
+  SOUNDBROWSER:"fenêtre d'écoute des sons", DEFER:"messages d'action reportée",
+  CONFIG:"panneau de configuration", ITEM:"objets", EFFECT:"bandeau d'effets",
+  MSG:"messages du mod",
+};
+
+const ACTION_BY_NAME = {};
+for (const action of REF_ACTIONS) ACTION_BY_NAME[action.name] = action;
+
+/// Texte affiche par defaut dans la note : ce que le mod fait de cette famille.
+/// Sert de documentation immediate au streamer qui ne connait pas la cle.
+function defaultNote(base) {
+  const { scope, role } = parseKey(base);
+  const parts = base.replace(/^UI_KAO_/, "").split("_");
+
+  if (scope === "SYSTEM") {
+    const domain = DOMAIN_NOTES[parts[1]];
+    return "Texte d'interface" + (domain ? " — " + domain : "") +
+           ". À ne pas modifier sans raison.";
+  }
+  if (parts[0] === "zombie") return "Nom affiché du type de zombie « " + parts[1] + " ».";
+  if (parts[0] === "costume") return "Répliques du costume « " + parts[1] + " ».";
+
+  const action = ACTION_BY_NAME[scope];
+  const parts2 = [];
+  if (ROLE_NOTES[role]) parts2.push(ROLE_NOTES[role]);
+  if (action && action.description) parts2.push("Action : " + action.description);
+  if (parts2.length === 0) parts2.push("Texte du mod, portée « " + scope + " ».");
+  return parts2.join(" ").trim();
+}
+
 function parseKey(base) {
   const parts = base.replace(/^UI_KAO_/, "").split("_");
   if (parts[0] === "SYSTEM") {
@@ -3318,7 +3362,8 @@ function build(playerData) {
       category: (() => { const r = parseKey(raw.base).role; return r ? ROLES[r] : null; })(),
       label: parseKey(raw.base).label,
       readOnly: parseKey(raw.base).scope === "SYSTEM",
-      note: notes[raw.base] || "",
+      note: notes[raw.base] !== undefined ? notes[raw.base] : defaultNote(raw.base),
+      autoNote: defaultNote(raw.base),
       variants: raw.rows.map((r, i) => ({
         value: r.value,
         originalKey: r.key,
@@ -3408,6 +3453,7 @@ function renderFamily(fam) {
   noteArea.rows = 1;
   noteArea.id = "note-" + fam.base;
   noteArea.placeholder = "À quoi sert cette phrase, quand elle se déclenche…";
+  noteArea.title = "Description fournie par le mod. La réécrire l'enregistre dans ton fichier.";
   noteArea.value = fam.note;
   noteArea.addEventListener("input", () => { fam.note = noteArea.value; autoGrow(noteArea); });
   label.htmlFor = noteArea.id;
@@ -3527,8 +3573,11 @@ function updateStats() {
 function buildOutput() {
   const out = {};
   for (const fam of state.families) {
+    // Seule une note REECRITE part dans le fichier : sinon chaque
+    // telechargement embarquerait 498 notes generees, que le jeu chargerait
+    // comme autant de traductions inutilisees.
     const note = fam.note.trim();
-    if (note) out[NOTE_PREFIX + fam.base] = note;
+    if (note && note !== fam.autoNote) out[NOTE_PREFIX + fam.base] = note;
     fam.variants.forEach((v, i) => { out[keyAt(fam, i)] = v.value; });
   }
   Object.assign(out, state.leftovers);
@@ -3777,7 +3826,6 @@ function renderBot() {
     check.type = "checkbox";
     check.checked = param.name in bot.chosen || param.required;
     check.disabled = param.required;
-    check.style.marginRight = "7px";
     name.appendChild(check);
     name.appendChild(document.createTextNode(param.name));
     if (param.required) {

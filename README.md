@@ -63,28 +63,3 @@ texture du jeu serait eclipsee par celle-ci.
 
 **Les images demandent un redemarrage** pour etre prises en compte : le moteur
 met ses textures en cache. Les textes, eux, se rechargent en cours de partie.
-
----
-
-## L'éditeur en ligne
-
-**https://neotok.github.io/SIF-Olsann/**
-
-Trois onglets :
-
-- **Traductions** — charge ton fichier, les clés ajoutées depuis ta dernière
-  version sont insérées avec leur texte d'origine et signalées en bleu. Tu n'as
-  plus qu'à écrire tes versions.
-- **Configuration** — les 53 actions réglables et leurs valeurs. Le fichier
-  téléchargé ne contient que tes écarts.
-- **Streamer.bot** — choisis une action, règle les paramètres, copie la ligne
-  à mettre dans `SIF.txt`.
-
-Rien n'est envoyé nulle part : les fichiers sont lus et réécrits dans le
-navigateur.
-
-## Mise à jour de cette référence
-
-Elle est générée depuis le code du mod par `tools/generate_player_files.lua`,
-et **ne se met pas à jour toute seule**. Après une nouvelle version du mod, il
-faut la régénérer et la repousser ici.
